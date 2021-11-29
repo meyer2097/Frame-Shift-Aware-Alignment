@@ -5,30 +5,32 @@ A simple fasta object, reader and writer
 
 from os import path
 
-translation_dict = {"GCA": "A", "GCC": "A", "GCG": "A", "GCT": "A",
-                    "AAC": "B", "AAT": "B", "GAC": "B", "GAT": "B",
-                    "TGC": "C", "TGT": "C",
-                    "GAC": "D", "GAT": "D",
-                    "GAA": "E", "GAG": "E",
-                    "TTC": "F", "TTT": "F",
-                    "GGA": "G", "GGC": "G", "GGG": "G", "GGT": "G",
-                    "CAC": "H", "CAT": "H",
-                    "ATA": "I", "ATC": "I", "ATT": "I",
-                    "AAA": "K", "AAG": "K",
-                    "CTA": "L", "CTC": "L", "CTG": "L", "CTT": "L", "TTA": "L", "TTG": "L",
-                    "ATG": "M",
-                    "AAC": "N", "AAT": "N",
-                    "CCA": "P", "CCC": "P", "CCG": "P", "CCT": "P",
+# Translation Dictionary according to 
+# https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG1
+translation_dict = {"TTT": "F", "TTC": "F",
+                    "TTA": "L", "TTG": "L",
+                    "TCT": "S", "TCC": "S","TCA": "S", "TCG": "S",
+                    "TAT": "Y", "TAC": "Y",
+                    "TAA": "*", "TAG": "*", "TGA": "*",
+                    "TGT": "C", "TGC": "C",
+                    "TGG": "W", 
+                    "CTT": "L", "CTC": "L", "CTA": "L", "CTG": "L",
+                    "CCT": "P", "CCC": "P", "CCA": "P", "CCG": "P",
+                    "CAT": "H", "CAC": "H",
                     "CAA": "Q", "CAG": "Q",
-                    "AGA": "R", "AGG": "R", "CGA": "R", "CGC": "R", "CGG": "R", "CGT": "R",
-                    "AGC": "S", "AGT": "S", "TCA": "S", "TCC": "S", "TCG": "S", "TCT": "S",
-                    "ACA": "T", "ACC": "T", "ACG": "T", "ACT": "T",
-                    "GTA": "V", "GTC": "V", "GTG": "V", "GTT": "V",
-                    "TGG": "W",
-                    "NNN": "X",
-                    "TAC": "Y", "TAT": "Y",
-                    "CAA": "Z", "CAG": "Z", "GAA": "Z", "GAG": "Z",
-                    "TAA": "*", "TAG": "*", "TGA": "*"}
+                    "CGT": "R", "CGC": "R", "CGA": "R", "CGG": "R",
+                    "ATT": "I", "ATC": "I", "ATA": "I",
+                    "ATG": "M", 
+                    "ACT": "T", "ACC": "T", "ACA": "T", "ACG": "T",
+                    "AAT": "N", "AAC": "N",
+                    "AAA": "K", "AAG": "K",
+                    "AGT": "S", "AGC": "S",
+                    "AGA": "R", "AGG": "R",
+                    "GTT": "V","GTC": "V", "GTA": "V", "GTG": "V",
+                    "GCT": "A", "GCC": "A", "GCA": "A", "GCG": "A",
+                    "GAT": "D", "GAC": "D",
+                    "GAA": "E", "GAG": "E",
+                    "GGT": "G", "GGC": "G", "GGA": "G", "GGG": "G"}
 
 class fasta_object():
     def __init__(self, head, body):
@@ -62,7 +64,12 @@ class fasta_object():
         """
         return self.body == o.body
     
-    def translate(self, d=translation_dict):
+    def toAmino(self, d=translation_dict):
+        """
+        Translates the dna sequence of a fasta_object to amino-acids.
+        Reading frame starts at position 0, tailing bases will be ignored.
+        Attention: Will throw exception if triplet is not found.
+        """
         translated = ""
         for i in range(0, len(fo.body), 3):
             codon = fo.body[i:i+3]
