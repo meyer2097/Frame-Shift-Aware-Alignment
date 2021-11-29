@@ -4,10 +4,11 @@
 
 import argparse
 import blosum
-
+import fasta
 
 
 def DP():
+    
     """
     Dynamic Programming 
     

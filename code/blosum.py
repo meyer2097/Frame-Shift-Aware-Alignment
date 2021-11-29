@@ -66,14 +66,13 @@ class BLOSUM():
         self.matrix = blosumDict
 
 
-    def get(aminoA, aminoB):
+    def get(self, aminoA, aminoB):
         """
         Input:
             aminoA: Char
             aminoB: Char
         Ouput:
-            score: Int
+            score: Float
         """
-
-        return
+        return self.matrix[f"{aminoA}{aminoB}"]
 
