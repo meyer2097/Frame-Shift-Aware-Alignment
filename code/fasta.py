@@ -1,8 +1,34 @@
 """
 @author: Jules Kreuer
+A simple fasta object, reader and writer 
 """
 
 from os import path
+
+translation_dict = {"GCA": "A", "GCC": "A", "GCG": "A", "GCT": "A",
+                    "AAC": "B", "AAT": "B", "GAC": "B", "GAT": "B",
+                    "TGC": "C", "TGT": "C",
+                    "GAC": "D", "GAT": "D",
+                    "GAA": "E", "GAG": "E",
+                    "TTC": "F", "TTT": "F",
+                    "GGA": "G", "GGC": "G", "GGG": "G", "GGT": "G",
+                    "CAC": "H", "CAT": "H",
+                    "ATA": "I", "ATC": "I", "ATT": "I",
+                    "AAA": "K", "AAG": "K",
+                    "CTA": "L", "CTC": "L", "CTG": "L", "CTT": "L", "TTA": "L", "TTG": "L",
+                    "ATG": "M",
+                    "AAC": "N", "AAT": "N",
+                    "CCA": "P", "CCC": "P", "CCG": "P", "CCT": "P",
+                    "CAA": "Q", "CAG": "Q",
+                    "AGA": "R", "AGG": "R", "CGA": "R", "CGC": "R", "CGG": "R", "CGT": "R",
+                    "AGC": "S", "AGT": "S", "TCA": "S", "TCC": "S", "TCG": "S", "TCT": "S",
+                    "ACA": "T", "ACC": "T", "ACG": "T", "ACT": "T",
+                    "GTA": "V", "GTC": "V", "GTG": "V", "GTT": "V",
+                    "TGG": "W",
+                    "NNN": "X",
+                    "TAC": "Y", "TAT": "Y",
+                    "CAA": "Z", "CAG": "Z", "GAA": "Z", "GAG": "Z",
+                    "TAA": "*", "TAG": "*", "TGA": "*"}
 
 class fasta_object():
     def __init__(self, head, body):
@@ -31,9 +57,20 @@ class fasta_object():
 
     def __eq__(self, o):
         """
-        Magic method to allow equality check on fasta_objects
+        Magic method to allow equality check on fasta_objects.
+        Does not check for header equality.
         """
-        return self.head == o.head and self.body == o.body
+        return self.body == o.body
+    
+    def translate(self, d=translation_dict):
+        translated = ""
+        for i in range(0, len(fo.body), 3):
+            codon = fo.body[i:i+3]
+            if not len(codon) == 3:
+                break 
+            translated += translation_dict[codon]
+        
+        self.body = translated
 
 def read_fasta(self, fileName):
     """
@@ -41,7 +78,7 @@ def read_fasta(self, fileName):
     """
 
     if not path.isfile(fileName):
-        raise FileNotFoundError("FastaFile not found!")
+        raise FileNotFoundError("Fasta File not found!")
 
     fasta_objects = []
     with open(fileName, 'r') as f:
@@ -78,18 +115,17 @@ def write_fasta(self, fasta_pairs, fileName, mode="w"):
 
     with open(fileName, mode) as f:
         for fo in fasta_pairs:
-            f.write(fo.head + "\n")
+            f.write(f"{fo.head}\n")
             body_len = len(fo.body)
             # Write only 70 chars per line
             for i in range(0, body_len, 70):
-                f.write(fo.body[i:i+70] + "\n")
+                f.write(f"{fo.body[i:i+70]}\n")
     return True
 
 
 def print_fasta(self, fasta):
     """
     Prints a single or a list of fasta_objects.
-    Takes fasta_objects as input.
     """
 
     if not isinstance(fasta, list):
