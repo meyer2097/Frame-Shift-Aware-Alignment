@@ -3,8 +3,35 @@
 """
 
 import argparse
+import blosum
+
+
+
+def DP():
+    """
+    Dynamic Programming 
+    
+    Input:
+        dnaseq: fasta_object or string, DNA sequence
+        aaseq:  fasta_object or string, Aminoacid sequence
+        gap:    Int, Gap-penatly
+        shift:  Int, Frameshift-penalty
+        blosum: Dict, BLOSUM dictionary 
+
+    Returns:
+        socore: Int, Score of aligment
+        alignment: String, 
+            Alignment in following format:
+            MIHPFISLV\RP
+            MIHPFISLV-RP
+            With \ denoting a backward-framshift
+            With / denoting a forward-framshift 
+    """
+    return
+
 
 def main():
+
     # TODO IO Functions
         # READ DNA
         # READ AA
@@ -33,7 +60,7 @@ if __name__ == "__main__":
     parser.add_argument('-gp', "--gap", action='store', dest='gap', 
                         help='DNA gap penalty', required=True)
 
-    parser.add_argument('-aa', "--shift", action='store', dest='shift', 
+    parser.add_argument('-s', "--shift", action='store', dest='shift', 
                         help='DNA gap penalty', required=False)
 
     parser.add_argument('-b', "--blosum", action='store', dest='gap', 
