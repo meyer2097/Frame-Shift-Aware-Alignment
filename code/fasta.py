@@ -37,7 +37,11 @@ class fasta_object():
         """
         Object to keep a valid fasta object
         """
-        self.head = head
+        if head.startswith(">"):
+            self.head = head
+        else:
+            self.head = f">{head}"
+        
         self.body = body
 
     def __str__(self): 
@@ -70,16 +74,10 @@ class fasta_object():
         Reading frame starts at position 0, tailing bases will be ignored.
         Attention: Will throw exception if triplet is not found.
         """
-        translated = ""
-        for i in range(0, len(fo.body), 3):
-            codon = fo.body[i:i+3]
-            if not len(codon) == 3:
-                break 
-            translated += translation_dict[codon]
+        self.body = translate_seq(self.body, d)
         
-        self.body = translated
 
-def read_fasta(self, fileName):
+def read_fasta(fileName):
     """
     Reads a fasta-style file and returns a list of fasta_objects
     """
@@ -111,7 +109,7 @@ def read_fasta(self, fileName):
         fasta_objects.append(fasta_object(head, body))
     return fasta_objects
 
-def write_fasta(self, fasta_pairs, fileName, mode="w"):
+def write_fasta(fasta_pairs, fileName, mode="w"):
     """
     Writes a list of fasta_objects or a single one to a file.
     Takes fasta_objects as input.
@@ -130,7 +128,7 @@ def write_fasta(self, fasta_pairs, fileName, mode="w"):
     return True
 
 
-def print_fasta(self, fasta):
+def print_fasta(fasta):
     """
     Prints a single or a list of fasta_objects.
     """
@@ -146,4 +144,25 @@ def print_fasta(self, fasta):
             print(fo.body[i:i+70])
     return None
              
-            
+def translate_seq(seq, d=translation_dict):
+    """
+    Translates a DNA sequence to a AA sequence.
+    Reading frame starts at position 0, tailing bases will be ignored.
+    Attention: Will throw exception if triplet is not found.
+
+    To translate a fasta_object use objcet.toAmino()
+    
+    Input:
+        seq: String, sequence to translate
+        d: dict, dictionary of translation
+    Returns:
+        translated: String, translated sequence
+    """
+    translated = ""
+    for i in range(0, len(seq), 3):
+        codon = seq[i:i+3]
+        if not len(codon) == 3:
+            break 
+        translated += translation_dict[codon]
+    
+    return translated
