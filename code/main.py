@@ -1,5 +1,5 @@
 """
-@author: Jules Kreuer, Catalina, Samira Breitling, Sebastian
+@author: Jules Kreuer, Catalina, Samira Breitling, Sebastian Meyer
 """
 
 import argparse
