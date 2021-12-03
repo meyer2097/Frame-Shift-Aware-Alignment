@@ -68,11 +68,20 @@ class BLOSUM():
 
     def get(self, aminoA, aminoB):
         """
+        Get BLOSUM score
+        Return "None" if key not found
+
         Input:
             aminoA: Char
             aminoB: Char
         Ouput:
             score: Float
         """
-        return self.matrix[f"{aminoA}{aminoB}"]
+        score = 0
+        try:
+            score = self.matrix[f"{aminoA}{aminoB}"]
+        except KeyError:
+            score = None
+
+        return score
 
