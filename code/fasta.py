@@ -127,7 +127,6 @@ def write_fasta(fasta_pairs, fileName, mode="w"):
                 f.write(f"{fo.body[i:i+70]}\n")
     return True
 
-
 def print_fasta(fasta):
     """
     Prints a single or a list of fasta_objects.
@@ -158,11 +157,17 @@ def translate_seq(seq, d=translation_dict):
     Returns:
         translated: String, translated sequence
     """
+    keys = []
+    for key in d.keys():
+        keys.append(key)
+
     translated = ""
     for i in range(0, len(seq), 3):
         codon = seq[i:i+3]
         if not len(codon) == 3:
-            break 
+            break
+        if codon not in keys:
+            return "incorrect Sequence"
         translated += translation_dict[codon]
     
     return translated
