@@ -81,7 +81,7 @@ class BLOSUM():
         try:
             score = self.matrix[f"{aminoA}{aminoB}"]
         except KeyError:
-            score = None
+            score = float('-inf')
 
         return score
 
