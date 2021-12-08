@@ -8,7 +8,7 @@ import blosum
 import fasta
 
 
-def DP():
+def DP(shift=-1, gap=-1):
     
     """
     Dynamic Programming 
@@ -32,35 +32,47 @@ def DP():
 
     blosum_handler = blosum.BLOSUM(62)
 
-    x = "CATCATATCI"
-    y = "HHIJ"
+    x = "CATCATATC"
+    y = "HHI"
 
     len_x = len(x)
     len_y = len(y)
 
-    alignment = np.zeros((len_y+3, len_x+1), dtype=int)
-    alignment[0, :] = [x+2 for x in range(0, -(len_x+1), -1)]
-    alignment[:, 0] = [y-2 for y in range(0, -(len_y+3), -1)]
-    alignment[:, 1] = [y-1 for y in range(0, -(len_y + 3), -1)]
-    alignment[:, 2] = [y for y in range(0, -(len_y + 3), -1)]
-
-    print(alignment)
-
-    for i in range (0, len_x):
-        for j in range (0, len_y):
-
-            translated_codon_i3 = fasta.translate_seq(x[i-2:i+1])
-            translated_codon_i2 = fasta.translate_seq(x[i-1:i])
-            translated_codon_i = fasta.translate_seq(x[i:i])
-            translated_codon_i = fasta.translate_seq(x[i:i])
-
+    alignment = np.zeros((len_x+3, len_y+1), dtype=int)
+    alignment[:, 0] = [x+2 for x in range(0, -(len_x+3), -1)]
+    alignment[0, :] = [y-2 for y in range(0, -(len_y+1), -1)]
+    alignment[1, :] = [y-1 for y in range(0, -(len_y + 1), -1)]
+    alignment[2, :] = [y for y in range(0, -(len_y + 1), -1)]
+    alignment[0,0]=0
+    alignment[0,1]=0
+    alignment[1,0]=0
+    alignment[1,1]=0
+    #print(alignment)
+    
+    for i in range (3, len_x+3):
+        for j in range (1, len_y+1):
+            
+            
+            translated_codon_i = fasta.translate_seq(x[i-2:i+1])
+            translated_codon_i1 = fasta.translate_seq(x[i-3:i])
+            translated_codon_i2 = fasta.translate_seq(x[i-4:i-1])
+            translated_codon_i3 = fasta.translate_seq(x[i-5:i-2])
+            
+            acid_j1= y[j-1]
+            acid_j= y[-1]
+            
+            case1=alignment[i-3,j-1]+blosum_handler.get(translated_codon_i, acid_j)
+            case2=alignment[i,j-1]+blosum_handler.get(translated_codon_i, acid_j1)+shift
+            case3=alignment[i-1,j]+blosum_handler.get(translated_codon_i1, acid_j)+gap
+            case4=alignment[i-2,j]+blosum_handler.get(translated_codon_i2, acid_j)+2*gap
+            case5=alignment[i-3,j]+blosum_handler.get(translated_codon_i3, acid_j)+shift
+            
+            alignment[i,j]=max(case1,case2,case3,case4,case5)
             #amino_acid = y[j]
+    print(alignment)
+           
 
-            print(translated_codon, amino_acid)
-
-            # Case MATCH
-            if translated_codon == amino_acid:
-                 = blosum_handler.get(translated_codon, amino_acid)
+            
 
     return
 
