@@ -69,7 +69,7 @@ class BLOSUM():
     def get(self, aminoA, aminoB):
         """
         Get BLOSUM score
-        Return "None" if key not found
+        Return "-inf" if key not found
 
         Input:
             aminoA: Char

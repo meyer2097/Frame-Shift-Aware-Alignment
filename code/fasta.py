@@ -167,7 +167,7 @@ def translate_seq(seq, d=translation_dict):
         if not len(codon) == 3:
             break
         if codon not in keys:
-            return "*"
+            return "~"
         translated += translation_dict[codon]
     
     return translated
