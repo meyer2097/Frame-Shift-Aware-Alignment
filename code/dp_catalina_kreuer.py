@@ -7,8 +7,9 @@ import numpy as np
 import sys
 import fasta as ft
 import blosum as bl
-
-SCORES = {'gap': 4, 'frame1': 12, 'frame2': 13, 'frame3': 14}
+from os import path
+from math import floor
+SCORES = {'gap': 1, 'frame1': 1, 'frame2': 1, 'frame3': 1}
 
 
 def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
@@ -36,19 +37,29 @@ def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
         score_matrix[i][0] = -i*SCORES['gap']
         traceback_matrix[i][0] = "U"
 
-        ''' 
-        score_matrix[i][1] = -i*SCORES['gap'] - SCORES['frame2']
-        traceback_matrix[i][1] = "2"
+        
+        score_matrix[i][1] = -i*SCORES['gap'] - SCORES['frame1']
+        traceback_matrix[i][1] = "1"
 
-        score_matrix[i][2] = -i*SCORES['gap'] -SCORES['frame1']
-        traceback_matrix[i][2] = "1"
-        '''
+        score_matrix[i][2] = -i*SCORES['gap'] - SCORES['frame2']
+        traceback_matrix[i][2] = "2"
+        
 
     # First row 
-    for j in range(m):
+    for j in range(0, m, 3):
         score_matrix[0][j] = -j*SCORES['frame3']
+        try:
+            score_matrix[0][j+1] = -j*SCORES['frame3'] - SCORES['frame1']
+            score_matrix[0][j+2] = -j*SCORES['frame3'] - SCORES['frame2']
+        except:
+            pass
+
         traceback_matrix[0][j] = "3"
-    
+        try:
+            traceback_matrix[0][j+1] = "1"
+            traceback_matrix[0][j+2] = "2"
+        except:
+            pass
 
     print(score_matrix)
     print(traceback_matrix)
@@ -99,10 +110,10 @@ def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
     aaSeq_align = ""
     i = n-1
     j = m-3
+    print(i,j)
     # Go from bottom right, to top left
     while i > 1 or j > 1:
         # Amino Match / Missmatch
-        
         if traceback_matrix[i][j] == "D":
             dnaSeq_align = ft.translate_seq(dnaSeq[j-3:j]) + dnaSeq_align
             aaSeq_align  = aaSeq[i] + aaSeq_align
@@ -123,7 +134,7 @@ def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
         
         elif traceback_matrix[i][j] == "2":
             dnaSeq_align = "#" + dnaSeq_align
-            aaSeq_align  = "-"       + aaSeq_align
+            aaSeq_align  = "-" + aaSeq_align
             j -= 2
         
         elif traceback_matrix[i][j] == "1":
@@ -137,6 +148,7 @@ def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
         print(i,j)
         print(dnaSeq_align)
         print(aaSeq_align)
+
     if verbose:
         print("Score: " + str(score_matrix[n-1][m-3]))
         print(dnaSeq_align)
