@@ -7,9 +7,8 @@ import numpy as np
 import sys
 import fasta as ft
 import blosum as bl
-from os import path
-from math import floor
-SCORES = {'gap': 1, 'frame1': 1, 'frame2': 1, 'frame3': 1}
+
+SCORES = {'gap': 1, 'frame1': 2, 'frame2': 2, 'frame3': 1}
 
 
 def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
@@ -26,6 +25,7 @@ def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
 
     aaSeq  = f"*{aaSeq}"
     dbaSeq = f"*{dnaSeq}"
+
     # Init matrix with zeros
     score_matrix     = np.zeros((n, m), dtype = int)
 
@@ -37,7 +37,6 @@ def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
         score_matrix[i][0] = -i*SCORES['gap']
         traceback_matrix[i][0] = "U"
 
-        
         score_matrix[i][1] = -i*SCORES['gap'] - SCORES['frame1']
         traceback_matrix[i][1] = "1"
 
@@ -51,14 +50,14 @@ def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
         try:
             score_matrix[0][j+1] = -j*SCORES['frame3'] - SCORES['frame1']
             score_matrix[0][j+2] = -j*SCORES['frame3'] - SCORES['frame2']
-        except:
+        except IndexError:
             pass
 
         traceback_matrix[0][j] = "3"
         try:
             traceback_matrix[0][j+1] = "1"
             traceback_matrix[0][j+2] = "2"
-        except:
+        except IndexError:
             pass
 
     print(score_matrix)
@@ -72,35 +71,25 @@ def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
             align_score = bm.get(translated_seq, aaSeq[i])
 
             # Regular alignment
-            align_dna_aa  = score_matrix[i-1][j-3] + align_score
-            insert_amino  = score_matrix[i-1][j]   - SCORES['gap']  
-            l3_dna_insert = score_matrix[i][j-3]   - SCORES['frame3'] 
+            align_dna_aa  = (score_matrix[i-1][j-3] + align_score     , "D")
+            insert_amino  = (score_matrix[i-1][j]   - SCORES['gap']   , "U")
+            l3_dna_insert = (score_matrix[i][j-3]   - SCORES['frame3'], "3")
 
             # Frameshift
-            l2_dna_insert = score_matrix[i][j-2]   - SCORES['frame2']
-            l1_dna_insert = score_matrix[i][j-1]   - SCORES['frame1']
+            l2_dna_insert = (score_matrix[i][j-2]   - SCORES['frame2'], "2")
+            l1_dna_insert = (score_matrix[i][j-1]   - SCORES['frame1'], "1")
             
             # Take best option
-            score_matrix[i][j] = max(align_dna_aa, 
-                                     insert_amino,
-                                     l3_dna_insert,
-                                     l2_dna_insert,
-                                     l1_dna_insert)
+            max_path = max(align_dna_aa, 
+                           insert_amino,
+                           l3_dna_insert,
+                           l2_dna_insert,
+                           l1_dna_insert,
+                           key = lambda t: t[0])
 
-            # Insert path to traceback matrix
-            if score_matrix[i][j] == align_dna_aa:
-                traceback_matrix[i][j] = "D"
-            elif score_matrix[i][j] == insert_amino:
-                traceback_matrix[i][j] = "U"
-            elif score_matrix[i][j] == l3_dna_insert:
-                traceback_matrix[i][j] = "3"
-            elif score_matrix[i][j] == l2_dna_insert:
-                traceback_matrix[i][j] = "2"
-            elif score_matrix[i][j] == l1_dna_insert:
-                traceback_matrix[i][j] = "1"
-            else:
-                # Can never happen
-                exit("Traceback Insert Error")
+            score_matrix[i][j]     = max_path[0]
+            traceback_matrix[i][j] = max_path[1]
+
     if verbose:
         print(score_matrix)
         print(traceback_matrix)
@@ -108,19 +97,21 @@ def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
     # Traceback
     dnaSeq_align = ""
     aaSeq_align = ""
+
     i = n-1
     j = m-3
+    
     print(i,j)
     # Go from bottom right, to top left
     while i > 1 or j > 1:
         # Amino Match / Missmatch
-        if traceback_matrix[i][j] == "D":
+        if traceback_matrix[i][j]  == "D":
             dnaSeq_align = ft.translate_seq(dnaSeq[j-3:j]) + dnaSeq_align
             aaSeq_align  = aaSeq[i] + aaSeq_align
             j -= 3
             i -= 1
 
-        # Amino Insert
+        # Amino insert
         elif traceback_matrix[i][j] == "U":
             dnaSeq_align = "-" + dnaSeq_align
             aaSeq_align  = aaSeq[i]       + aaSeq_align
@@ -132,30 +123,27 @@ def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
             aaSeq_align  = "-"  + aaSeq_align
             j -= 3
         
+        # L2 insert
         elif traceback_matrix[i][j] == "2":
             dnaSeq_align = "#" + dnaSeq_align
             aaSeq_align  = "-" + aaSeq_align
             j -= 2
         
+        # L1 insert
         elif traceback_matrix[i][j] == "1":
             dnaSeq_align = "$"  + dnaSeq_align
             aaSeq_align  = "-"       + aaSeq_align
             j -= 1
-        else:
-            print(i,j)
-            exit("Traceback Traversal Error")
-        
-        print(i,j)
-        print(dnaSeq_align)
-        print(aaSeq_align)
 
+        else:
+            Exception("Traceback Traversal Error")
+    
     if verbose:
         print("Score: " + str(score_matrix[n-1][m-3]))
         print(dnaSeq_align)
         print(aaSeq_align)
 
-    #return [seq1_top, seq2_bottom, score_matrix[n-1][m-1]]
+    return [dnaSeq_align, aaSeq_align, score_matrix[n-1][m-3]]
 
-#nw_regular("AGTAGTAGT", "ACTACTACCCTTTA")
 bm = bl.BLOSUM(62)
-fa_nw("GCCGCCGCCGCC", "AAAA", bm)
+fa_nw("GCCCGCCGCCGCC", "AAAA", bm)
