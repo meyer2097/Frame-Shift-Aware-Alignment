@@ -6,16 +6,19 @@ Version: Catalina & Jules
 import numpy as np
 import sys
 import fasta as ft
-import blosum as bl
 
-SCORES = {'gap': 1, 'frame1': 2, 'frame2': 2, 'frame3': 1}
-
-
-def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
+def frameshift_aware_alignment_core(dnaSeq, aaSeq, gap, shift, bm, verbose=False):
     """
-    Frameshift aware implementation of Needleman-Wunsch for DNA and AA-Sequences
+    Frameshift aware implementation of Needleman-Wunsch for DNA and AA-Sequences.
+    This is the core funcion. 
+
     Parameters:
-        todo
+        dnaSeq:  string, dna sequence.
+        aaSeq:   string, amino-acid sequence.
+        gap:     int, score for gap.
+        shift:   int, score for frameshift.
+        bm:      BLOSUM Object, blosum matrix for AA-alignment scores.
+        verbose: bool, default=False, print additional information to stdout.
     Returns:
         todo
     """
@@ -23,8 +26,9 @@ def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
     n = len(aaSeq) + 1 # Row
     m = len(dnaSeq)+ 3 # Col
 
-    aaSeq  = f"*{aaSeq}"
-    dbaSeq = f"*{dnaSeq}"
+    # Add space to compensate index shifting
+    aaSeq  = f" {aaSeq}"
+    dbaSeq = f" {dnaSeq}"
 
     # Init matrix with zeros
     score_matrix     = np.zeros((n, m), dtype = int)
@@ -34,22 +38,22 @@ def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
     
     # First three columns
     for i in range(n):
-        score_matrix[i][0] = -i*SCORES['gap']
+        score_matrix[i][0] = -i*gap
         traceback_matrix[i][0] = "U"
 
-        score_matrix[i][1] = -i*SCORES['gap'] - SCORES['frame1']
+        score_matrix[i][1] = -i*gap - shift
         traceback_matrix[i][1] = "1"
 
-        score_matrix[i][2] = -i*SCORES['gap'] - SCORES['frame2']
+        score_matrix[i][2] = -i*gap - shift
         traceback_matrix[i][2] = "2"
         
 
     # First row 
     for j in range(0, m, 3):
-        score_matrix[0][j] = -j*SCORES['frame3']
+        score_matrix[0][j] = -j*gap
         try:
-            score_matrix[0][j+1] = -j*SCORES['frame3'] - SCORES['frame1']
-            score_matrix[0][j+2] = -j*SCORES['frame3'] - SCORES['frame2']
+            score_matrix[0][j+1] = -j*gap - shift
+            score_matrix[0][j+2] = -j*gap - shift
         except IndexError:
             pass
 
@@ -71,13 +75,13 @@ def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
             align_score = bm.get(translated_seq, aaSeq[i])
 
             # Regular alignment
-            align_dna_aa  = (score_matrix[i-1][j-3] + align_score     , "D")
-            insert_amino  = (score_matrix[i-1][j]   - SCORES['gap']   , "U")
-            l3_dna_insert = (score_matrix[i][j-3]   - SCORES['frame3'], "3")
+            align_dna_aa  = (score_matrix[i-1][j-3] + align_score, "D")
+            insert_amino  = (score_matrix[i-1][j]   - gap,         "U")
+            l3_dna_insert = (score_matrix[i][j-3]   - gap,         "3")
 
             # Frameshift
-            l2_dna_insert = (score_matrix[i][j-2]   - SCORES['frame2'], "2")
-            l1_dna_insert = (score_matrix[i][j-1]   - SCORES['frame1'], "1")
+            l2_dna_insert = (score_matrix[i][j-2]   - shift, "2")
+            l1_dna_insert = (score_matrix[i][j-1]   - shift, "1")
             
             # Take best option
             max_path = max(align_dna_aa, 
@@ -102,7 +106,7 @@ def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
     j = m-3
     
     print(i,j)
-    # Go from bottom right, to top left
+    # Go from bottom right (-3), to top left
     while i > 1 or j > 1:
         # Amino Match / Missmatch
         if traceback_matrix[i][j]  == "D":
@@ -125,13 +129,13 @@ def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
         
         # L2 insert
         elif traceback_matrix[i][j] == "2":
-            dnaSeq_align = "#" + dnaSeq_align
+            dnaSeq_align = "\\" + dnaSeq_align
             aaSeq_align  = "-" + aaSeq_align
             j -= 2
         
         # L1 insert
         elif traceback_matrix[i][j] == "1":
-            dnaSeq_align = "$"  + dnaSeq_align
+            dnaSeq_align = "/"  + dnaSeq_align
             aaSeq_align  = "-"       + aaSeq_align
             j -= 1
 
@@ -143,7 +147,4 @@ def fa_nw(dnaSeq, aaSeq, bm, verbose=True):
         print(dnaSeq_align)
         print(aaSeq_align)
 
-    return [dnaSeq_align, aaSeq_align, score_matrix[n-1][m-3]]
-
-bm = bl.BLOSUM(62)
-fa_nw("GCCCGCCGCCGCC", "AAAA", bm)
+    return dnaSeq_align, aaSeq_align, score_matrix[n-1][m-3]
