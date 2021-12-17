@@ -26,11 +26,28 @@ translation_dict = {"TTT": "F", "TTC": "F",
                     "AAA": "K", "AAG": "K",
                     "AGT": "S", "AGC": "S",
                     "AGA": "R", "AGG": "R",
-                    "GTT": "V","GTC": "V", "GTA": "V", "GTG": "V",
+                    "GTT": "V", "GTC": "V", "GTA": "V", "GTG": "V",
                     "GCT": "A", "GCC": "A", "GCA": "A", "GCG": "A",
                     "GAT": "D", "GAC": "D",
                     "GAA": "E", "GAG": "E",
                     "GGT": "G", "GGC": "G", "GGA": "G", "GGG": "G"}
+
+complement_dict = { "A": "T",
+                    "G": "C",
+                    "C": "G",
+                    "T": "A",
+                    "U": "A",
+                    "R": "Y",
+                    "Y": "R",
+                    "S": "S",
+                    "W": "W",
+                    "K": "M",
+                    "M": "K",
+                    "B": "V", 
+                    "V": "B", 
+                    "D": "H", 
+                    "H": "D"}
+
 
 class fasta_object():
     def __init__(self, head, body):
@@ -75,7 +92,12 @@ class fasta_object():
         Attention: Will throw exception if triplet is not found.
         """
         self.body = translate_seq(self.body, d)
-        
+    
+    def toReverseComp(self):
+        """
+        Translates the dna sequence the reverse complement.
+        """
+        self.body = reverse_comp(self.body)
 
 def read_fasta(fileName):
     """
@@ -142,7 +164,13 @@ def print_fasta(fasta):
         for i in range(0, body_len, 70):
             print(fo.body[i:i+70])
     return None
-             
+
+def __maybeFind(key, d, alt):
+    try:
+        return d[key]
+    except KeyError:
+        return alt
+
 def translate_seq(seq, d=translation_dict):
     """
     Translates a DNA sequence to a AA sequence.
@@ -157,17 +185,21 @@ def translate_seq(seq, d=translation_dict):
     Returns:
         translated: String, translated sequence
     """
-    keys = []
-    for key in d.keys():
-        keys.append(key)
 
     translated = ""
     for i in range(0, len(seq), 3):
         codon = seq[i:i+3]
         if not len(codon) == 3:
             break
-        if codon not in keys:
-            return "~"
-        translated += translation_dict[codon]
-    
+        translated += __maybeFind(codon, d, "~")
     return translated
+
+
+
+def reverse_comp(seq):
+    """
+    Reverses complement of sequence.
+    """
+    seq = reversed(seq)
+    seq = "".join(map(lambda b: __maybeFind(b, complement_dict, b), seq))
+    return seq
