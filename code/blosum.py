@@ -59,6 +59,8 @@ class BLOSUM():
             # For each line
             for line in content:
                 line = line.split()
+                if len(line) < 0:
+                    break
                 # Add Line/Label combination to dict
                 for index, lab in enumerate(labels, start=1):
                     blosumDict[f"{line[0]}{lab}"] = float(line[index])
