@@ -19,5 +19,4 @@ def test_blosum_get():
             for b in ["R", "Q", "F", "*"]:
                 get_test.append(blosum.get(a, b))
 
-        print("Res:", get_test)
         assert get_test == blosum_results[blosum_number]
