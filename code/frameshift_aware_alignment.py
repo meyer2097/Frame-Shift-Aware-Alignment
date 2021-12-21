@@ -9,12 +9,11 @@ import numpy as np
 from os.path import isfile
 
 
-def __frameshift_aware_alignment_core(dnaSeq: str, aaSeq: str,
+def __alignment_core(dnaSeq: str, aaSeq: str,
                                       gap: int, shift: int,
-                                      bm: bl.BLOSUM(), verbose=False):
+                                      bm: bl.BLOSUM()):
     """
-    Frameshift aware implementation of Needleman-Wunsch for DNA and AA-Sequences.
-    This is the core funcion.
+    Core implementation of the frameshift aware Needleman-Wunsch for DNA and AA-Sequences.
 
     Parameters:
         dnaSeq:  string, dna sequence.
@@ -22,7 +21,6 @@ def __frameshift_aware_alignment_core(dnaSeq: str, aaSeq: str,
         gap:     int, score for gap.
         shift:   int, score for frameshift.
         bm:      BLOSUM Object, blosum matrix for AA-alignment scores.
-        verbose: bool, default=False, print additional information to stdout.
     Returns:
         score: Int, Score of aligment
         dnaSeq_align: String, alignment of the DNA sequence.
@@ -99,10 +97,6 @@ def __frameshift_aware_alignment_core(dnaSeq: str, aaSeq: str,
             score_matrix[i][j] = max_path[0]
             traceback_matrix[i][j] = max_path[1]
 
-    if verbose:
-        print(score_matrix)
-        print(traceback_matrix)
-
     # Traceback
     dnaSeq_align = ""
     aaSeq_align = ""
@@ -152,6 +146,26 @@ def __frameshift_aware_alignment_core(dnaSeq: str, aaSeq: str,
 def align(dnaSeq: str, aaSeq: str, gap: int, shift: int,
           blosum, out=False, verbose: bool = False):
 
+    """
+    Frameshift aware Needleman-Wunsch for DNA and AA-Sequences.
+
+    Parameters:
+        dnaSeq:  string, dna sequence.
+        aaSeq:   string, amino-acid sequence.
+        gap:     int, score for gap.
+        shift:   int, score for frameshift.
+        bm:      BLOSUM Object, blosum matrix for AA-alignment scores.
+        verbose: bool, print score and alignment.
+    Returns:
+        score: Int, Score of aligment
+        dnaSeq_align: String, alignment of the DNA sequence.
+            With \\ denoting a backward-framshift.
+            With / denoting a forward-framshift.
+            With - denoting a gap.
+        aaSeq_align: String, alignment of the AA sequence.
+            With - denoting a gap.
+    """
+
     if isfile(dnaSeq):
         dnaSeq = ft.read_fasta(dnaSeq)[0]
 
@@ -167,11 +181,12 @@ def align(dnaSeq: str, aaSeq: str, gap: int, shift: int,
     if shift < gap:
         Warning("Gap penalty is larger than shift penalty")
 
-    score, dnaSeq_align, aaSeq_align = __frameshift_aware_alignment_core(dnaSeq, aaSeq, gap, shift, bm, verbose)
+    score, dnaSeq_align, aaSeq_align = __alignment_core(dnaSeq, aaSeq, gap, shift, bm)
 
-    print(f"Score: {score}")
-    print(dnaSeq_align)
-    print(aaSeq_align)
+    if verbose:
+        print(f"Score: {score}")
+        print(dnaSeq_align)
+        print(aaSeq_align)
 
     # TODO IO
     # PRINT Output
@@ -213,10 +228,6 @@ if __name__ == "__main__":
                         help="Specify path to output file.",
                         required=False)
 
-    parser.add_argument('-v', "--verbose", action='store_true', dest='verbose',
-                        help='Will supress any output.',
-                        required=False)
-
     args = parser.parse_args()
 
     arg_dnaseq = args.dnaseq
@@ -224,7 +235,6 @@ if __name__ == "__main__":
     arg_gap = int(args.gap)
     arg_shift = int(args.shift)
     arg_out = args.out
-    arg_verbose = args.verbose
 
     if args.blosum_path:
         arg_blosum = args.blosum_path
@@ -237,4 +247,4 @@ if __name__ == "__main__":
           arg_shift,
           arg_blosum,
           arg_out,
-          arg_verbose)
+          verbose=True)
