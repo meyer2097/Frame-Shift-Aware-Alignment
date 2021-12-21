@@ -33,20 +33,20 @@ translation_dict = {"TTT": "F", "TTC": "F",
                     "GGT": "G", "GGC": "G", "GGA": "G", "GGG": "G"}
 
 complement_dict = {"A": "T",
-                    "G": "C",
-                    "C": "G",
-                    "T": "A",
-                    "U": "A",
-                    "R": "Y",
-                    "Y": "R",
-                    "S": "S",
-                    "W": "W",
-                    "K": "M",
-                    "M": "K",
-                    "B": "V",
-                    "V": "B",
-                    "D": "H",
-                    "H": "D"}
+                   "G": "C",
+                   "C": "G",
+                   "T": "A",
+                   "U": "A",
+                   "R": "Y",
+                   "Y": "R",
+                   "S": "S",
+                   "W": "W",
+                   "K": "M",
+                   "M": "K",
+                   "B": "V",
+                   "V": "B",
+                   "D": "H",
+                   "H": "D"}
 
 
 class fasta_object():

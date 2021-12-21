@@ -10,8 +10,8 @@ from os.path import isfile
 
 
 def __frameshift_aware_alignment_core(dnaSeq: str, aaSeq: str,
-                                    gap: int, shift: int,
-                                    bm: bl.BLOSUM(), verbose=False):
+                                      gap: int, shift: int,
+                                      bm: bl.BLOSUM(), verbose=False):
     """
     Frameshift aware implementation of Needleman-Wunsch for DNA and AA-Sequences.
     This is the core funcion.
@@ -26,7 +26,7 @@ def __frameshift_aware_alignment_core(dnaSeq: str, aaSeq: str,
     Returns:
         score: Int, Score of aligment
         dnaSeq_align: String, alignment of the DNA sequence.
-            With \ denoting a backward-framshift.
+            With \\ denoting a backward-framshift.
             With / denoting a forward-framshift.
             With - denoting a gap.
         aaSeq_align: String, alignment of the AA sequence.
@@ -36,9 +36,8 @@ def __frameshift_aware_alignment_core(dnaSeq: str, aaSeq: str,
     n = len(aaSeq) + 1  # Row
     m = len(dnaSeq) + 3  # Col
 
-    # Add space to compensate index shifting
+    # Add space to compensate index shifting for amino-acid
     aaSeq = f" {aaSeq}"
-    dbaSeq = f" {dnaSeq}"
 
     # Init matrix with zeros
     score_matrix = np.zeros((n, m), dtype=int)
@@ -82,8 +81,8 @@ def __frameshift_aware_alignment_core(dnaSeq: str, aaSeq: str,
 
             # Regular alignment
             align_dna_aa = (score_matrix[i-1][j-3] + align_score, "D")
-            insert_amino = (score_matrix[i-1][j] - gap,         "U")
-            l3_dna_insert = (score_matrix[i][j-3] - gap,         "3")
+            insert_amino = (score_matrix[i-1][j] - gap,           "U")
+            l3_dna_insert = (score_matrix[i][j-3] - gap,          "3")
 
             # Frameshift
             l2_dna_insert = (score_matrix[i][j-2] - shift, "2")
@@ -175,8 +174,8 @@ def align(dnaSeq: str, aaSeq: str, gap: int, shift: int,
     print(aaSeq_align)
 
     # TODO IO
-        # PRINT Output
-        # WRITE Output
+    # PRINT Output
+    # WRITE Output
 
     return score, dnaSeq_align, aaSeq_align
 
@@ -186,37 +185,37 @@ if __name__ == "__main__":
     # Parse arguments
     parser = argparse.ArgumentParser(description='A NICE TEXT')
     parser.add_argument('-d', "--dnaseq", action='store', dest='dnaseq',
-        help="DNA Sequence to path to FASTA file with one entry.",
-        required=True)
+                        help="DNA Sequence to path to FASTA file with one entry.",
+                        required=True)
 
     parser.add_argument('-aa', "--aaseq", action='store', dest='aaseq',
-        help="Amino-acid sequence or path to FASTA file with one entry.",
-        required=True)
+                        help="Amino-acid sequence or path to FASTA file with one entry.",
+                        required=True)
 
     parser.add_argument('-gp', "--gap", action='store', dest='gap',
-        help="DNA gap penalty",
-        required=True)
+                        help="DNA gap penalty",
+                        required=True)
 
     parser.add_argument('-sp', "--shift", action='store', dest='shift',
-        help="Frameshift penalty",
-        required=True)
+                        help="Frameshift penalty",
+                        required=True)
 
     parser.add_argument('-b', "--blosum", action='store', dest='blosum', default=62,
-        help=""" Specify blosum matrix. One of: 45, 50, 62, 80, 90. Default: 62.
-                 Will be irgnored if -bp is set.""",
-        required=False)
+                        help=""" Specify blosum matrix. One of: 45, 50, 62, 80, 90. Default: 62.
+                                 Will be irgnored if -bp is set.""",
+                        required=False)
 
     parser.add_argument('-bp', "--blosum_path", action='store', dest='blosum_path',
-        help="Specify path to blosum matrix. Use only if -b is not a viable solution.",
-        required=False)
+                        help="Specify path to blosum matrix. Use only if -b is not a viable solution.",
+                        required=False)
 
     parser.add_argument('-o', "--out", action='store', dest='out',
-        help="Specify path to output file.",
-        required=False)
+                        help="Specify path to output file.",
+                        required=False)
 
     parser.add_argument('-v', "--verbose", action='store_true', dest='verbose',
-        help='Will supress any output.',
-        required=False)
+                        help='Will supress any output.',
+                        required=False)
 
     args = parser.parse_args()
 
