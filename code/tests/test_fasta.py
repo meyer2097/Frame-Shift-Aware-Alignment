@@ -26,7 +26,7 @@ def test_write_read_fasta():
 
 def test_translate_seq():
     assert fasta.translate_seq("CGGCCTTCTATCTTCTTC") == "RPSIFF"
-    assert fasta.translate_seq("HELLO") == "incorrect Sequence"
+    assert fasta.translate_seq("HELLO") == "~"
 
 
 def test_print_fasta(capsys):

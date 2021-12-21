@@ -5,11 +5,10 @@ from blosum import BLOSUM
 
 def test_blosum_get():
     blosum_results = {
-        45: [0, 1, -2, -5, 3, 1, -3, -5, -2, -2, 1, -5, None, None, None, None],
-        50: [0, 1, -1, -5, 3, 2, -4, -5, -3, -1, 1, -5, None, None, None, None],
-        62: [0, 0, -1, -4, 2, 1, -3, -4, -3, -2, 1, -4, None, None, None, None],
-        #80: [0, 1, -2, -6, 2, 1, -4, -6, -4, -3, 0, -6, None, None, None, None],
-        90: [0, 1, -2, -6, 2, 1, -4, -6, -4, -3, 0, -6, None, None, None, None]
+        45: [0, 1, -2, -5, 3, 1, -3, -5, -2, -2, 1, -5, float("-inf"), float("-inf"), float("-inf"), float("-inf")],
+        50: [0, 1, -1, -5, 3, 2, -4, -5, -3, -1, 1, -5, float("-inf"), float("-inf"), float("-inf"), float("-inf")],
+        62: [0, 0, -1, -4, 2, 1, -3, -4, -3, -2, 1, -4, float("-inf"), float("-inf"), float("-inf"), float("-inf")],
+        90: [0, 1, -2, -6, 2, 1, -4, -6, -4, -3, 0, -6, float("-inf"), float("-inf"), float("-inf"), float("-inf")]
     }
 
     for idx, blosum_number in enumerate(blosum_results.keys()):
