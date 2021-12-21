@@ -10,8 +10,8 @@ from os.path import isfile
 
 
 def __alignment_core(dnaSeq: str, aaSeq: str,
-                                      gap: int, shift: int,
-                                      bm: bl.BLOSUM()):
+                     gap: int, shift: int,
+                     bm: bl.BLOSUM()):
     """
     Core implementation of the frameshift aware Needleman-Wunsch for DNA and AA-Sequences.
 
