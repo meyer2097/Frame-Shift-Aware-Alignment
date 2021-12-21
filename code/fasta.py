@@ -1,26 +1,26 @@
 """
 @author: Jules Kreuer
-A simple fasta object, reader and writer 
+A simple fasta object, reader and writer
 """
 
 from os import path
 
-# Translation Dictionary according to 
+# Translation Dictionary according to
 # https://www.ncbi.nlm.nih.gov/Taxonomy/Utils/wprintgc.cgi#SG1
 translation_dict = {"TTT": "F", "TTC": "F",
                     "TTA": "L", "TTG": "L",
-                    "TCT": "S", "TCC": "S","TCA": "S", "TCG": "S",
+                    "TCT": "S", "TCC": "S", "TCA": "S", "TCG": "S",
                     "TAT": "Y", "TAC": "Y",
                     "TAA": "*", "TAG": "*", "TGA": "*",
                     "TGT": "C", "TGC": "C",
-                    "TGG": "W", 
+                    "TGG": "W",
                     "CTT": "L", "CTC": "L", "CTA": "L", "CTG": "L",
                     "CCT": "P", "CCC": "P", "CCA": "P", "CCG": "P",
                     "CAT": "H", "CAC": "H",
                     "CAA": "Q", "CAG": "Q",
                     "CGT": "R", "CGC": "R", "CGA": "R", "CGG": "R",
                     "ATT": "I", "ATC": "I", "ATA": "I",
-                    "ATG": "M", 
+                    "ATG": "M",
                     "ACT": "T", "ACC": "T", "ACA": "T", "ACG": "T",
                     "AAT": "N", "AAC": "N",
                     "AAA": "K", "AAG": "K",
@@ -32,7 +32,7 @@ translation_dict = {"TTT": "F", "TTC": "F",
                     "GAA": "E", "GAG": "E",
                     "GGT": "G", "GGC": "G", "GGA": "G", "GGG": "G"}
 
-complement_dict = { "A": "T",
+complement_dict = {"A": "T",
                     "G": "C",
                     "C": "G",
                     "T": "A",
@@ -43,9 +43,9 @@ complement_dict = { "A": "T",
                     "W": "W",
                     "K": "M",
                     "M": "K",
-                    "B": "V", 
-                    "V": "B", 
-                    "D": "H", 
+                    "B": "V",
+                    "V": "B",
+                    "D": "H",
                     "H": "D"}
 
 
@@ -58,10 +58,10 @@ class fasta_object():
             self.head = head
         else:
             self.head = f">{head}"
-        
+
         self.body = body
 
-    def __str__(self): 
+    def __str__(self):
         """
         Magic method to allow fasta_object printing.
         """
@@ -70,7 +70,7 @@ class fasta_object():
         # Print only 70 chars per line
         for i in range(0, len(self.body), 70):
             out += f'{self.body[i:i+70]}\n'
-        return out[:-1] # Remove tailing newline
+        return out[:-1]  # Remove tailing newline
 
     def __repr__(self):
         """
@@ -84,7 +84,7 @@ class fasta_object():
         Does not check for header equality.
         """
         return self.body == o.body
-    
+
     def toAmino(self, d=translation_dict):
         """
         Translates the dna sequence of a fasta_object to amino-acids.
@@ -92,12 +92,13 @@ class fasta_object():
         Attention: Will throw exception if triplet is not found.
         """
         self.body = translate_seq(self.body, d)
-    
+
     def toReverseComp(self):
         """
         Translates the dna sequence the reverse complement.
         """
         self.body = reverse_comp(self.body)
+
 
 def read_fasta(fileName):
     """
@@ -131,6 +132,7 @@ def read_fasta(fileName):
         fasta_objects.append(fasta_object(head, body))
     return fasta_objects
 
+
 def write_fasta(fasta_pairs, fileName, mode="w"):
     """
     Writes a list of fasta_objects or a single one to a file.
@@ -149,6 +151,7 @@ def write_fasta(fasta_pairs, fileName, mode="w"):
                 f.write(f"{fo.body[i:i+70]}\n")
     return True
 
+
 def print_fasta(fasta):
     """
     Prints a single or a list of fasta_objects.
@@ -156,7 +159,7 @@ def print_fasta(fasta):
 
     if not isinstance(fasta, list):
         fasta = [fasta]
-    
+
     for fo in fasta:
         print(fo.head)
         body_len = len(fo.body)
@@ -165,11 +168,13 @@ def print_fasta(fasta):
             print(fo.body[i:i+70])
     return None
 
+
 def __maybeFind(key, d, alt):
     try:
         return d[key]
     except KeyError:
         return alt
+
 
 def translate_seq(seq, d=translation_dict):
     """
@@ -178,7 +183,7 @@ def translate_seq(seq, d=translation_dict):
     Attention: Will throw exception if triplet is not found.
 
     To translate a fasta_object use objcet.toAmino()
-    
+
     Input:
         seq: String, sequence to translate
         d: dict, dictionary of translation
@@ -193,7 +198,6 @@ def translate_seq(seq, d=translation_dict):
             break
         translated += __maybeFind(codon, d, "~")
     return translated
-
 
 
 def reverse_comp(seq):

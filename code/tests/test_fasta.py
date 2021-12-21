@@ -1,6 +1,6 @@
-import pytest
 import fasta
 from os import path, remove
+
 
 def test_read_fasta():
     fp = path.join(path.dirname(__file__), "read_fasta_test.fasta")
@@ -15,13 +15,12 @@ def test_write_read_fasta():
 
     fo = [fasta.fasta_object(">Atlantic dolphin", "CGGCCTT*CTAAAAATTZZZ*ZZZZASASD*TCTTCTTC"),
           fasta.fasta_object(">Pacific dolphin", "CTTTCTATCTCSATTTCCTCT")]
-    
+
     fasta.write_fasta(fo, file_path)
-    
+
     fo_read = fasta.read_fasta(file_path)
     remove(file_path)
     assert fo == fo_read
-    
 
 
 def test_translate_seq():

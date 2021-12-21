@@ -1,5 +1,4 @@
 # Testing BLOSUM Handling
-import pytest
 from blosum import BLOSUM
 
 
