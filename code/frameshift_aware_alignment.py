@@ -7,6 +7,7 @@ import blosum as bl
 import fasta  as ft
 import numpy as np
 from os.path import isfile
+
 def __frameshift_aware_alignment_core(dnaSeq: str, aaSeq: str,
                                     gap: int, shift: int,
                                     bm: bl.BLOSUM(), verbose=False):
@@ -148,11 +149,9 @@ def __frameshift_aware_alignment_core(dnaSeq: str, aaSeq: str,
     
     return score_matrix[n-1][m-3], dnaSeq_align, aaSeq_align
 
-def frameshift_aware_alignment(dnaSeq: str, aaSeq: str,
-                               gap: int, shift: int,
-                               blosum, out, verbose: bool):
+def align(dnaSeq: str, aaSeq: str, gap: int, shift: int,
+          blosum, out = False, verbose: bool = False):
 
-    
     if isfile(dnaSeq):
         dnaSeq = ft.read_fasta(dnaSeq)[0]
     
@@ -178,7 +177,7 @@ def frameshift_aware_alignment(dnaSeq: str, aaSeq: str,
         # PRINT Output
         # WRITE Output
 
-    return
+    return score, dnaSeq_align, aaSeq_align
 
 if __name__ == "__main__":
 
@@ -232,10 +231,10 @@ if __name__ == "__main__":
         arg_blosum = int(args.blosum)
 
 
-    frameshift_aware_alignment(arg_dnaseq,
-                               arg_aaseq,
-                               arg_gap,
-                               arg_shift,
-                               arg_blosum,
-                               arg_out,
-                               arg_verbose)
+    align(arg_dnaseq,
+          arg_aaseq,
+          arg_gap,
+          arg_shift,
+          arg_blosum,
+          arg_out,
+          arg_verbose)
