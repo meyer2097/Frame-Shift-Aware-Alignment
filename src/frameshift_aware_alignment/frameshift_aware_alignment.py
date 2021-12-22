@@ -3,7 +3,7 @@
 """
 
 import argparse
-import numpy as np
+from numpy import zeros
 from os.path import isfile
 
 from frameshift_aware_alignment import fasta as ft
@@ -39,10 +39,10 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
     aaSeq = f" {aaSeq}"
 
     # Init matrix with zeros
-    score_matrix = np.zeros((n, m), dtype=int)
+    score_matrix = zeros((n, m), dtype=int)
 
     # Init traceback matrix
-    traceback_matrix = np.zeros((n, m), dtype=str)
+    traceback_matrix = zeros((n, m), dtype=str)
 
     # First three columns
     for i in range(n):
