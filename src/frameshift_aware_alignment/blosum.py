@@ -2,10 +2,11 @@
 A simple BLOSUM matrix reader
 """
 from importlib.resources import read_text
+from warnings import warn
 
 
 class BLOSUM():
-    def __init__(self, n=None, path=None):
+    def __init__(self, n):
         """
         Object to easily access a blosum matrix.
 
@@ -29,11 +30,11 @@ class BLOSUM():
             path = f"{n}.blosum"
             self.__loadMatrix(path, res=True)
 
-        elif path is not None:
+        elif isinstance(n, str):
             # load custom matrix
-            self.__loadMatrix(path, res=False)
+            self.__loadMatrix(n, res=False)
         else:
-            Exception("Cant initate empty BLOSUM Object")
+            raise(BaseException("Can't initate empty BLOSUM Object"))
 
     def __loadMatrix(self, path, res=False) -> None:
         """
@@ -47,11 +48,12 @@ class BLOSUM():
         Returns:
             blosumDict: Dictionary, Blosum-Dict
         """
+
         if res:
             content = read_text("frameshift_aware_alignment.blosum_data", path).splitlines()
         else:
-            with open(path, "r") as bFile:
-                content = bFile.readlines()
+            with open(path, "r") as f:
+                content = f.readlines()
 
         # Skip header line
         content = content[1:]
@@ -59,6 +61,14 @@ class BLOSUM():
         # Extract labels
         labels = content[0]
         labelslist = labels.split()
+
+        # Check if quadratic
+        if not len(labelslist) == len(content)-1:
+            raise EOFError("Blosum file is not quadratic.")
+
+        # Check if all AA are covered
+        if not len(labelslist) == 25:
+            warn(UserWarning("Blosum matrix may not cover all amino-acids"))
 
         # Skip label line
         content = content[1:]
