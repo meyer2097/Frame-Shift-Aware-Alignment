@@ -3,15 +3,16 @@
 """
 
 import argparse
-import blosum as bl
-import fasta as ft
 import numpy as np
 from os.path import isfile
+
+from frameshift_aware_alignment import fasta as ft
+from frameshift_aware_alignment import blosum as bl
 
 
 def __alignment_core(dnaSeq: str, aaSeq: str,
                      gap: int, shift: int,
-                     bm: bl.BLOSUM()):
+                     bm: bl.BLOSUM):
     """
     Core implementation of the frameshift aware Needleman-Wunsch for DNA and AA-Sequences.
 
@@ -92,9 +93,9 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
                            l3_dna_insert,
                            l2_dna_insert,
                            l1_dna_insert,
-                           key=lambda t: t[0])
+                           key=lambda t: float(t[0]))
 
-            score_matrix[i][j] = max_path[0]
+            score_matrix[i][j] = int(max_path[0])
             traceback_matrix[i][j] = max_path[1]
 
     # Traceback

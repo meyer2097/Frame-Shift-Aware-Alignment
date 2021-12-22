@@ -1,5 +1,5 @@
 # Testing BLOSUM Handling
-from blosum import BLOSUM
+from frameshift_aware_alignment import blosum as bl
 
 
 def test_blosum_get():
@@ -11,11 +11,11 @@ def test_blosum_get():
     }
 
     for idx, blosum_number in enumerate(blosum_results.keys()):
-        blosum = BLOSUM(blosum_number)
+        bm = bl.BLOSUM(blosum_number)
         get_test = []
 
         for a in ["H", "K", "W", "U"]:
             for b in ["R", "Q", "F", "*"]:
-                get_test.append(blosum.get(a, b))
+                get_test.append(bm.get(a, b))
 
         assert get_test == blosum_results[blosum_number]

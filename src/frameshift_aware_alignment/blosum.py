@@ -1,6 +1,7 @@
 """
 A simple BLOSUM matrix reader
 """
+from importlib.resources import read_text
 
 
 class BLOSUM():
@@ -23,62 +24,69 @@ class BLOSUM():
 
         self.n = n
 
+        # Using default matrix
         if n in [45, 50, 62, 80, 90]:
-            # Using default matrix
-            self.loadMatrix(f"blosum/{n}.blosum")
+            path = f"{n}.blosum"
+            self.__loadMatrix(path, res=True)
+
         elif path is not None:
             # load custom matrix
-            self.loadMatrix(path)
+            self.__loadMatrix(path, res=False)
+        else:
+            Exception("Cant initate empty BLOSUM Object")
 
-    def loadMatrix(self, path):
+    def __loadMatrix(self, path, res=False) -> None:
         """
         Reads a Blosum matrix from file.
         File in a format like:
             https://www.ncbi.nlm.nih.gov/IEB/ToolBox/C_DOC/lxr/source/data/BLOSUM62
 
         Input:
-            path: String, path to file
+            path: str, path to a file.
 
         Returns:
             blosumDict: Dictionary, Blosum-Dict
         """
-        with open(path, "r") as bFile:
-            content = bFile.readlines()
+        if res:
+            content = read_text("frameshift_aware_alignment.blosum_data", path).splitlines()
+        else:
+            with open(path, "r") as bFile:
+                content = bFile.readlines()
 
-            # Skip header line
-            content = content[1:]
+        # Skip header line
+        content = content[1:]
 
-            # Extract labels
-            labels = content[0]
-            labels = labels.split()
+        # Extract labels
+        labels = content[0]
+        labelslist = labels.split()
 
-            # Skip label line
-            content = content[1:]
+        # Skip label line
+        content = content[1:]
 
-            blosumDict = {}
-            # For each line
-            for line in content:
-                line = line.split()
-                if len(line) < 0:
-                    break
-                # Add Line/Label combination to dict
-                for index, lab in enumerate(labels, start=1):
-                    blosumDict[f"{line[0]}{lab}"] = float(line[index])
+        blosumDict = {}
+        # For each line
+        for line in content:
+            linelist = line.split()
+            if len(linelist) < 0:
+                break
+            # Add Line/Label combination to dict
+            for index, lab in enumerate(labelslist, start=1):
+                blosumDict[f"{linelist[0]}{lab}"] = float(linelist[index])
 
         self.matrix = blosumDict
 
-    def get(self, aminoA, aminoB):
+    def get(self, aminoA: str, aminoB: str) -> float:
         """
         Get BLOSUM score
         Return "-inf" if key not found
 
         Input:
-            aminoA: Char
+            aminoA: Charself.matrix[
             aminoB: Char
         Ouput:
             score: Float
         """
-        score = 0
+        score = 0.0
         try:
             score = self.matrix[f"{aminoA}{aminoB}"]
         except KeyError:

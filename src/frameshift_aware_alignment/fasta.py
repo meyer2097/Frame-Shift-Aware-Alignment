@@ -205,5 +205,4 @@ def reverse_comp(seq):
     Reverses complement of sequence.
     """
     seq = reversed(seq)
-    seq = "".join(map(lambda b: __maybeFind(b, complement_dict, b), seq))
-    return seq
+    return "".join(map(lambda b: __maybeFind(b, complement_dict, b), seq))  # type:ignore
