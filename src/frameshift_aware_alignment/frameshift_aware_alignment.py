@@ -3,15 +3,20 @@
 """
 
 import argparse
-from numpy import zeros
+import numpy as np
 from os.path import isfile
 
-from frameshift_aware_alignment import fasta as ft
-from frameshift_aware_alignment import blosum as bl
+
+import fasta as ft
+import blosum as bl
+#from frameshift_aware_alignment import fasta as ft
+#from frameshift_aware_alignment import blosum as bl
+
+#from fasta import fasta
 
 
 def __alignment_core(dnaSeq: str, aaSeq: str,
-                     gap: int, shift: int,
+                     gap: int, gap_open:int, gap_extend:int, shift: int,
                      bm: bl.BLOSUM):
     """
     Core implementation of the frameshift aware Needleman-Wunsch for DNA and AA-Sequences.
@@ -39,13 +44,15 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
     aaSeq = f" {aaSeq}"
 
     # Init matrix with zeros
-    score_matrix = zeros((n, m), dtype=int)
+    score_matrix = np.zeros((n, m), dtype=float)
+    insertion_matrix = np.zeros((n, m), dtype=float)
+    deletion_matrix = np.zeros((n, m), dtype=float)
 
     # Init traceback matrix
-    traceback_matrix = zeros((n, m), dtype=str)
+    traceback_matrix = np.zeros((n, m), dtype=str)
 
     # First three columns
-    for i in range(n):
+    """for i in range(n):
         score_matrix[i][0] = -i*gap
         traceback_matrix[i][0] = "U"
 
@@ -53,10 +60,44 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
         traceback_matrix[i][1] = "1"
 
         score_matrix[i][2] = -i*gap - shift
-        traceback_matrix[i][2] = "2"
+        traceback_matrix[i][2] = "2"""
 
-    # First row
-    for j in range(0, m, 3):
+    score_matrix[-1][0] = float("-inf")
+    deletion_matrix[-1][0] = float("-inf")
+    insertion_matrix[-1][0] = float("-inf")
+    score_matrix[0][0] = float("-inf")
+    deletion_matrix[0][0] = float("-inf")
+
+    g = n
+
+    for g_run in range(1, g+1):
+        deletion_matrix[3*g_run][0] = -gap_open-gap_extend*g_run
+        insertion_matrix[0][g_run] = -gap_open-gap_extend*g_run
+        deletion_matrix[3 * g_run][0] = -gap_open - gap_extend * g_run
+        deletion_matrix[3 * g_run - 1][0] = -gap_open - gap_extend * g_run - gap
+        deletion_matrix[3 * g_run + 1][0] = -gap_open - gap_extend * g_run - gap
+
+        score_matrix[-1][g_run] = float("-inf")
+        score_matrix[0][g_run] = float("-inf")
+        score_matrix[1][g_run] = float("-inf")
+        score_matrix[2][g_run] = float("-inf")
+
+        deletion_matrix[-1][g_run] = float("-inf")
+        deletion_matrix[0][g_run] = float("-inf")
+        deletion_matrix[1][g_run] = float("-inf")
+        deletion_matrix[2][g_run] = float("-inf")
+
+        score_matrix[g_run][0] = float("-inf")
+
+        insertion_matrix[-1][g_run] = float("-inf")
+        insertion_matrix[g_run][0] = float("-inf")
+
+    print(score_matrix)
+    print(deletion_matrix)
+    print(insertion_matrix)
+
+        # First row
+    """for j in range(0, m, 3):
         score_matrix[0][j] = -j*gap
         try:
             score_matrix[0][j+1] = -j*gap - shift
@@ -69,8 +110,8 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
             traceback_matrix[0][j+1] = "1"
             traceback_matrix[0][j+2] = "2"
         except IndexError:
-            pass
-
+            pass"""
+"""
     # Actual DP
     for i in range(1, n):  # Row, AA
         for j in range(3, m):  # Col, DNA
@@ -142,7 +183,7 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
             Exception("Traceback Traversal Error")
 
     return score_matrix[n-1][m-3], dnaSeq_align, aaSeq_align
-
+"""
 
 def align(dnaSeq: str, aaSeq: str, gap: int, shift: int,
           blosum, out=False, verbose: bool = False):
@@ -197,7 +238,7 @@ def align(dnaSeq: str, aaSeq: str, gap: int, shift: int,
 
 
 if __name__ == "__main__":
-
+"""
     # Parse arguments
     parser = argparse.ArgumentParser(description='A NICE TEXT')
     parser.add_argument('-d', "--dnaseq", action='store', dest='dnaseq',
@@ -217,8 +258,8 @@ if __name__ == "__main__":
                         required=True)
 
     parser.add_argument('-b', "--blosum", action='store', dest='blosum', default=62,
-                        help=""" Specify blosum matrix. One of: 45, 50, 62, 80, 90. Default: 62.
-                                 Will be irgnored if -bp is set.""",
+                        help=""" """Specify blosum matrix. One of: 45, 50, 62, 80, 90. Default: 62.
+                                 Will be irgnored if -bp is set."""""",
                         required=False)
 
     parser.add_argument('-bp', "--blosum_path", action='store', dest='blosum_path',
@@ -235,12 +276,18 @@ if __name__ == "__main__":
     arg_aaseq = args.aaseq
     arg_gap = int(args.gap)
     arg_shift = int(args.shift)
-    arg_out = args.out
+    arg_out = args.out"""
 
-    if args.blosum_path:
+    arg_dnaseq = "GGGGG"
+    arg_aaseq = "VVVV"
+    arg_gap = 5
+    arg_shift = 3
+    arg_out = "./"
+
+   """ if args.blosum_path:
         arg_blosum = args.blosum_path
     else:
-        arg_blosum = int(args.blosum)
+        arg_blosum = int(args.blosum)"""
 
     align(arg_dnaseq,
           arg_aaseq,
@@ -249,3 +296,5 @@ if __name__ == "__main__":
           arg_blosum,
           arg_out,
           verbose=True)
+
+
