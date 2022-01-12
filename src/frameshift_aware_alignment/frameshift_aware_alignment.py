@@ -196,10 +196,10 @@ def align(dnaSeq: str, aaSeq: str, gap: int, shift: int,
     """
 
     if isfile(dnaSeq):
-        dnaSeq = ft.read_fasta(dnaSeq)[0]
+        dnaSeq = ft.read(dnaSeq)[0]
 
     if isfile(aaSeq):
-        aaSeq = ft.read_fasta(aaSeq)[0]
+        aaSeq = ft.read(aaSeq)[0]
 
     bm = bl.BLOSUM(blosum_number)
 
