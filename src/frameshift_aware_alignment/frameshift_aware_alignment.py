@@ -2,7 +2,8 @@
 @author: Jules Kreuer, Catalina, Samira Breitling, Sebastian Meyer
 """
 
-from numpy import zeros
+from numpy import zeros, int_
+import numpy.typing as npt
 from os.path import isfile
 
 from .fasta import read_fasta, translate_seq
@@ -38,10 +39,10 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
     aaSeq = f" {aaSeq}"
 
     # Init matrix with zeros
-    score_matrix = zeros((n, m), dtype=int)
+    score_matrix = zeros((n, m), dtype=int)  # type: npt.NDArray[int_]
 
     # Init traceback matrix
-    traceback_matrix = zeros((n, m), dtype=str)
+    traceback_matrix = zeros((n, m), dtype=str)  # type: npt.NDArray[int_]
 
     # First three columns
     for i in range(n):
