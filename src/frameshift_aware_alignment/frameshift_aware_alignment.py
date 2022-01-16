@@ -10,7 +10,7 @@ import blosum as bl
 import miniFasta as ft
 
 def __alignment_core(dnaSeq: str, aaSeq: str,
-                     gap: int, shift: int,
+                     gap_open: int, gap_extend: int, shift: int,
                      bm: bl.BLOSUM):
     """
     Core implementation of the frameshift aware Needleman-Wunsch for DNA and AA-Sequences.
@@ -32,8 +32,6 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
     """
 
     # TODO: 
-    gap_extend = gap/2
-    gap_open = gap
 
     n = len(aaSeq) + 1  # Row
     m = len(dnaSeq) + 3  # Col
@@ -52,7 +50,7 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
 
     # First three columns
     for i in range(n):
-        basePenalty = -gap_open - ((i-1)*gap_extend)
+        basePenalty = -gap_open - (i*gap_extend)
         score_matrix[i][0] = basePenalty
         traceback_matrix[i][0] = "U"
         top_matrix[i][0] = float("-inf")
@@ -68,7 +66,7 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
 
     # First row
     for j in range(0, m, 3):
-        basePenalty = -gap_open - ((j-1)*gap_extend)
+        basePenalty = -gap_open - (j*gap_extend)
 
         score_matrix[0][j] = basePenalty
         try:
@@ -121,15 +119,18 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
                            l2_dna_insert,
                            l1_dna_insert)
                            
-            score_matrix[i][j] = int(max_path[0])
-            top_matrix[i][j] = int(insert_amino[0])
-            bottom_matrix[i][j] = int(l3_dna_insert[0])
+            score_matrix[i][j]     = int(max_path[0])
+            top_matrix[i][j]       = int(insert_amino[0])
+            bottom_matrix[i][j]    = int(l3_dna_insert[0])
             traceback_matrix[i][j] = max_path[1]
 
     # Traceback
     dnaSeq_align = ""
     aaSeq_align = ""
 
+    print(score_matrix)
+    print(top_matrix)
+    print(bottom_matrix)
     i = n-1
     j = m-3
 
@@ -172,7 +173,7 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
     return score_matrix[n-1][m-3], dnaSeq_align, aaSeq_align
 
 
-def align(dnaSeq: str, aaSeq: str, gap: int, shift: int,
+def align(dnaSeq: str, aaSeq: str, gap_open: int, gap_extend:int, shift: int,
           blosum_number, out=False, verbose: bool = False):
 
     """
@@ -205,12 +206,12 @@ def align(dnaSeq: str, aaSeq: str, gap: int, shift: int,
 
     if shift <= 0:
         Warning("Shift penalty lower equal zero!")
-    if gap <= 0:
+    if gap_open <= 0:
         Warning("Gap penalty lower equal zero!")
-    if shift < gap:
-        Warning("Gap penalty is larger than shift penalty")
+    if 2*shift < gap_open:
+        Warning("Gap penalty is larger than 2*shift penalty")
 
-    score, dnaSeq_align, aaSeq_align = __alignment_core(dnaSeq, aaSeq, gap, shift, bm)
+    score, dnaSeq_align, aaSeq_align = __alignment_core(dnaSeq, aaSeq, gap_open, gap_extend, shift, bm)
 
     if verbose:
         print(f"Score: {score}")
@@ -224,11 +225,12 @@ def align(dnaSeq: str, aaSeq: str, gap: int, shift: int,
     return score, dnaSeq_align, aaSeq_align
 
 
-align("GCTTAAGTGGATTGT",
-      "ARDCWC",
-          2,
-          6,
-          62,
+align("ATGCCCCCCCCCATG",
+      "MPM",
+          gap_open=1,
+          gap_extend=100,
+          shift=100,
+          blosum_number=62,
           out=False,
           verbose=True)
 
