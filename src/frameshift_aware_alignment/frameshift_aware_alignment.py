@@ -6,13 +6,13 @@ import argparse
 from numpy import zeros
 from os.path import isfile
 
-from frameshift_aware_alignment import fasta as ft
-from frameshift_aware_alignment import blosum as bl
+from .fasta import read_fasta, write_fasta, translate_seq
+from .blosum import BLOSUM
 
 
 def __alignment_core(dnaSeq: str, aaSeq: str,
                      gap: int, shift: int,
-                     bm: bl.BLOSUM):
+                     bm: BLOSUM):
     """
     Core implementation of the frameshift aware Needleman-Wunsch for DNA and AA-Sequences.
 
@@ -32,7 +32,7 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
             With - denoting a gap.
     """
 
-    n = len(aaSeq) + 1  # Row
+    n = len(aaSeq) + 1   # Row
     m = len(dnaSeq) + 3  # Col
 
     # Add space to compensate index shifting for amino-acid
@@ -72,11 +72,11 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
             pass
 
     # Actual DP
-    for i in range(1, n):  # Row, AA
+    for i in range(1, n):      # Row, AA
         for j in range(3, m):  # Col, DNA
 
-            translated_seq = ft.translate_seq(dnaSeq[j-3:j])
-            align_score = bm.get(translated_seq, aaSeq[i])
+            translated = translate_seq(dnaSeq[j-3:j])
+            align_score = bm.get(translated, aaSeq[i])
 
             # Regular alignment
             align_dna_aa = (score_matrix[i-1][j-3] + align_score, "D")
@@ -109,7 +109,7 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
     while i > 1 or j > 1:
         # Amino Match / Missmatch
         if traceback_matrix[i][j] == "D":
-            dnaSeq_align = ft.translate_seq(dnaSeq[j-3:j]) + dnaSeq_align
+            dnaSeq_align = translate_seq(dnaSeq[j-3:j]) + dnaSeq_align
             aaSeq_align = aaSeq[i] + aaSeq_align
             j -= 3
             i -= 1
@@ -122,7 +122,7 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
 
         # L3 insert
         elif traceback_matrix[i][j] == "3":
-            dnaSeq_align = ft.translate_seq(dnaSeq[j-3:j]) + dnaSeq_align
+            dnaSeq_align = translate_seq(dnaSeq[j-3:j]) + dnaSeq_align
             aaSeq_align = "-" + aaSeq_align
             j -= 3
 
@@ -151,10 +151,10 @@ def align(dnaSeq: str, aaSeq: str, gap: int, shift: int,
     Frameshift aware Needleman-Wunsch for DNA and AA-Sequences.
 
     Parameters:
-        dnaSeq:  string, dna sequence.
-        aaSeq:   string, amino-acid sequence.
-        gap:     int, score for gap.
-        shift:   int, score for frameshift.
+        dnaSeq:  string, dna sequence or path to a single entry fasta file.
+        aaSeq:   string, amino-acid sequence or path to a single entry fasta file.
+        gap:     int, gap penalty (absolute value).
+        shift:   int, frameshift penalty (absolute value).
         bm:      BLOSUM Object, blosum matrix for AA-alignment scores.
         verbose: bool, print score and alignment.
     Returns:
@@ -168,12 +168,12 @@ def align(dnaSeq: str, aaSeq: str, gap: int, shift: int,
     """
 
     if isfile(dnaSeq):
-        dnaSeq = ft.read_fasta(dnaSeq)[0]
+        dnaSeq = read_fasta(dnaSeq)[0]
 
     if isfile(aaSeq):
-        aaSeq = ft.read_fasta(aaSeq)[0]
+        aaSeq = read_fasta(aaSeq)[0]
 
-    bm = bl.BLOSUM(blosum)
+    bm = BLOSUM(blosum)
 
     if shift <= 0:
         Warning("Shift penalty lower equal zero!")
@@ -194,58 +194,3 @@ def align(dnaSeq: str, aaSeq: str, gap: int, shift: int,
     # WRITE Output
 
     return score, dnaSeq_align, aaSeq_align
-
-
-if __name__ == "__main__":
-
-    # Parse arguments
-    parser = argparse.ArgumentParser(description='A NICE TEXT')
-    parser.add_argument('-d', "--dnaseq", action='store', dest='dnaseq',
-                        help="DNA Sequence to path to FASTA file with one entry.",
-                        required=True)
-
-    parser.add_argument('-aa', "--aaseq", action='store', dest='aaseq',
-                        help="Amino-acid sequence or path to FASTA file with one entry.",
-                        required=True)
-
-    parser.add_argument('-gp', "--gap", action='store', dest='gap',
-                        help="DNA gap penalty",
-                        required=True)
-
-    parser.add_argument('-sp', "--shift", action='store', dest='shift',
-                        help="Frameshift penalty",
-                        required=True)
-
-    parser.add_argument('-b', "--blosum", action='store', dest='blosum', default=62,
-                        help=""" Specify blosum matrix. One of: 45, 50, 62, 80, 90. Default: 62.
-                                 Will be irgnored if -bp is set.""",
-                        required=False)
-
-    parser.add_argument('-bp', "--blosum_path", action='store', dest='blosum_path',
-                        help="Specify path to blosum matrix. Use only if -b is not a viable solution.",
-                        required=False)
-
-    parser.add_argument('-o', "--out", action='store', dest='out',
-                        help="Specify path to output file.",
-                        required=False)
-
-    args = parser.parse_args()
-
-    arg_dnaseq = args.dnaseq
-    arg_aaseq = args.aaseq
-    arg_gap = int(args.gap)
-    arg_shift = int(args.shift)
-    arg_out = args.out
-
-    if args.blosum_path:
-        arg_blosum = args.blosum_path
-    else:
-        arg_blosum = int(args.blosum)
-
-    align(arg_dnaseq,
-          arg_aaseq,
-          arg_gap,
-          arg_shift,
-          arg_blosum,
-          arg_out,
-          verbose=True)
