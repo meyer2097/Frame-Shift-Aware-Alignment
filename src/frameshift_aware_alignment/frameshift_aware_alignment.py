@@ -49,8 +49,8 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
     traceback_matrix = zeros((n, m), dtype=str)
 
     # First three columns
-    for i in range(n):
-        basePenalty = -gap_open - (i*gap_extend)
+    for i in range(1, n):
+        basePenalty = -3*gap_open - (i*gap_extend)
         score_matrix[i][0] = basePenalty
         traceback_matrix[i][0] = "U"
         top_matrix[i][0] = float("-inf")
@@ -69,6 +69,7 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
         basePenalty = -gap_open - (j*gap_extend)
 
         score_matrix[0][j] = basePenalty
+
         try:
             score_matrix[0][j+1] = basePenalty - shift
             score_matrix[0][j+2] = basePenalty - shift
@@ -97,8 +98,12 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
             align_score = bm[f"{translated_seq}{aaSeq[i]}"]
 
             # Regular alignment
-            align_dna_aa = (score_matrix[i-1][j-3] + align_score, "D")
+            align_dna_aa = (max(score_matrix[i-1][j-3],
+                                top_matrix[i-1][j-3],
+                                bottom_matrix[i-1][j-3]) + align_score, "D")
             
+            #align_dna_aa = (score_matrix[i-1][j-3] + align_score, "D")
+
             # Affine Gaps
             insert_amino_open = (score_matrix[i-1][j] - gap_open,  "U")
             insert_amino_extend = (top_matrix[i-1][j] - gap_extend,"U")
@@ -131,6 +136,7 @@ def __alignment_core(dnaSeq: str, aaSeq: str,
     print(score_matrix)
     print(top_matrix)
     print(bottom_matrix)
+    print(traceback_matrix)
     i = n-1
     j = m-3
 
@@ -225,11 +231,11 @@ def align(dnaSeq: str, aaSeq: str, gap_open: int, gap_extend:int, shift: int,
     return score, dnaSeq_align, aaSeq_align
 
 
-align("ATGCCCCCCCCCATG",
-      "MPM",
-          gap_open=1,
-          gap_extend=100,
-          shift=100,
+align("ATGATGATGCCC",
+      "PMP",
+          gap_open=7,
+          gap_extend=1,
+          shift=30,
           blosum_number=62,
           out=False,
           verbose=True)
