@@ -1,5 +1,5 @@
 # Testing BLOSUM Handling
-from frameshift_aware_alignment import blosum as bl
+from frameshift_aware_alignment import BLOSUM
 import pytest
 from os import path
 
@@ -14,7 +14,7 @@ f = float("-inf")
     (90, [0, 1, -2, -6, 2, 1, -4, -6, -4, -3, 0, -6, f, f, f, f])
 ])
 def test_blosum(blosum_number, expected):
-    bm = bl.BLOSUM(blosum_number)
+    bm = BLOSUM(blosum_number)
     get_test = []
 
     for a in ["H", "K", "W", "U"]:
@@ -27,7 +27,7 @@ def test_blosum(blosum_number, expected):
 @pytest.mark.filterwarnings("ignore:Blosum")
 def test_blosum_custom_file():
     fp = path.join(path.dirname(__file__), "test.blosum")
-    bm = bl.BLOSUM(fp)
+    bm = BLOSUM(fp)
     labels = ["A", "R", "N", "D"]
     s = sum([bm.get(a, b) for b in labels for a in labels])
     assert s == 17
@@ -36,11 +36,11 @@ def test_blosum_custom_file():
 @pytest.mark.xfail
 def test_blosum_invalid_file():
     fp = path.join(path.dirname(__file__), "fail.blosum")
-    bm = bl.BLOSUM(fp)
+    bm = BLOSUM(fp)
     bm.get("A", "B")
 
 
 @pytest.mark.xfail
 def test_blosum_empty():
-    bm = bl.BLOSUM(None)
+    bm = BLOSUM(None)
     bm.get("A", "B")

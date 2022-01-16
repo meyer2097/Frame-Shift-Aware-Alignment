@@ -1,5 +1,5 @@
 # Test fasta reading, writing and translating
-from frameshift_aware_alignment import fasta as ft
+import frameshift_aware_alignment as ft
 from os import path, remove
 
 
