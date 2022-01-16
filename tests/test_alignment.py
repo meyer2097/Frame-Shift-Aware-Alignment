@@ -1,5 +1,5 @@
 # Testing BLOSUM Handling
-from frameshift_aware_alignment import frameshift_aware_alignment as faa
+import frameshift_aware_alignment as faa
 
 gap = 2
 shift = 15
