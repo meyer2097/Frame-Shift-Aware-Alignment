@@ -5,4 +5,3 @@ __all__ = [
     "write_fasta",
     "translate_seq"
 ]
-

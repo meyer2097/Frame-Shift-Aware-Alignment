@@ -1,12 +1,11 @@
 import argparse
-from src.frameshift_aware_alignment.fasta import read_fasta, write_fasta, translate_seq
-from src.frameshift_aware_alignment.blosum import BLOSUM
+from src.frameshift_aware_alignment.frameshift_aware_alignment import align
+
 
 if __name__ == "__main__":
 
     # Parse arguments
-    parser = argparse.ArgumentParser(description=
-"""
+    parser = argparse.ArgumentParser(description="""
 A frameshift aware Needleman-Wunsch-Global-Aligner for DNA- and amino acid-sequences.
 """)
     parser.add_argument('-d', "--dnaseq", action='store', dest='dnaseq',
@@ -58,4 +57,3 @@ A frameshift aware Needleman-Wunsch-Global-Aligner for DNA- and amino acid-seque
           arg_blosum,
           arg_out,
           verbose=True)
-

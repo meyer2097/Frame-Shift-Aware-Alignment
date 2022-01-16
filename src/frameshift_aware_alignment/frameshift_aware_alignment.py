@@ -2,11 +2,10 @@
 @author: Jules Kreuer, Catalina, Samira Breitling, Sebastian Meyer
 """
 
-import argparse
 from numpy import zeros
 from os.path import isfile
 
-from .fasta import read_fasta, write_fasta, translate_seq
+from .fasta import read_fasta, translate_seq
 from .blosum import BLOSUM
 
 
