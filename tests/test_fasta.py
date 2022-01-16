@@ -1,38 +1,38 @@
 # Test fasta reading, writing and translating
-import frameshift_aware_alignment as ft
+import frameshift_aware_alignment as faa
 from os import path, remove
 
 
 def test_read_fasta():
     fp = path.join(path.dirname(__file__), "read_fasta_test.fasta")
-    assert ft.read_fasta(fp) == [
-        ft.fasta_object(">Atlantic dolphin", "CGGCCTTCTATCTTCTTC"),
-        ft.fasta_object(">Pacific dolphin", "CTTTCTATCTCTTTCCTCT")]
+    assert faa.read_fasta(fp) == [
+        faa.fasta_object(">Atlantic dolphin", "CGGCCTTCTATCTTCTTC"),
+        faa.fasta_object(">Pacific dolphin", "CTTTCTATCTCTTTCCTCT")]
 
 
 def test_write_read_fasta():
 
     file_path = path.join(path.dirname(__file__), "write_fasta_test.fasta")
 
-    fo = [ft.fasta_object(">Atlantic dolphin", "CGGCCTT*CTAAAAATTZZZ*ZZZZASASD*TCTTCTTC"),
-          ft.fasta_object(">Pacific dolphin", "CTTTCTATCTCSATTTCCTCT")]
+    fo = [faa.fasta_object(">Atlantic dolphin", "CGGCCTT*CTAAAAATTZZZ*ZZZZASASD*TCTTCTTC"),
+          faa.fasta_object(">Pacific dolphin", "CTTTCTATCTCSATTTCCTCT")]
 
-    ft.write_fasta(fo, file_path)
+    faa.write_fasta(fo, file_path)
 
-    fo_read = ft.read_fasta(file_path)
+    fo_read = faa.read_fasta(file_path)
     remove(file_path)
     assert fo == fo_read
 
 
 def test_translate_seq():
-    assert ft.translate_seq("CGGCCTTCTATCTTCTTC") == "RPSIFF"
-    assert ft.translate_seq("HELLO") == "~"
+    assert faa.translate_seq("CGGCCTTCTATCTTCTTC") == "RPSIFF"
+    assert faa.translate_seq("HELLO") == "~"
 
 
 def test_print_fasta(capsys):
     file_path = path.join(path.dirname(__file__), "read_fasta_test.fasta")
 
-    assert ft.print_fasta(ft.read_fasta(file_path)) is None
+    assert faa.print_fasta(faa.read_fasta(file_path)) is None
 
     # check if it prints the sequences correctly
     captured = capsys.readouterr()
@@ -41,6 +41,6 @@ CGGCCTTCTATCTTCTTC
 >Pacific dolphin
 CTTTCTATCTCTTTCCTCT
 """
-    assert ft.print_fasta(ft.fasta_object(">Atlantic dolphin", "CGGCCTTCTATCTTCTTC")) is None
-    assert ft.print_fasta([ft.fasta_object(">Atlantic dolphin", "CGGCCTTCTATCTTCTTC"),
-                           ft.fasta_object(">Pacific dolphin", "CTTTCTATCTCTTTCCTCT")]) is None
+    assert faa.print_fasta(faa.fasta_object(">Atlantic dolphin", "CGGCCTTCTATCTTCTTC")) is None
+    assert faa.print_fasta([faa.fasta_object(">Atlantic dolphin", "CGGCCTTCTATCTTCTTC"),
+                           faa.fasta_object(">Pacific dolphin", "CTTTCTATCTCTTTCCTCT")]) is None

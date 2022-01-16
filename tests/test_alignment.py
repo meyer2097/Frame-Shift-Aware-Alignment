@@ -1,4 +1,4 @@
-# Testing BLOSUM Handling
+# Testing Alignment Handling
 import frameshift_aware_alignment as faa
 
 gap = 2
