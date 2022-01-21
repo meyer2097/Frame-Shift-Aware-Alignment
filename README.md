@@ -28,12 +28,42 @@ In an alignment the gap penalty is an important parameter to score alignments. I
 In addition to the plain frameshift aware alignment, we also implemented a frameshift alignment which also considers the affine gap penalty model.
 
 
-_The figures were taken out of the Sequence Bioinformatics script by Daniel Huson_
-
 ## Teamwork
 In the beginning of the group project we first implemented the different helper functions: translating the DNA sequence to an amino acid sequence, reading in the fasta files and reading in the blosum matrix. We tested these functions and added different blossum matrices. Additionally we added the main function and discussed the input paramteters and the output format. Next we started with the actual frameshift aware alginment. Therefore we decided to implement two algorithms in pairs of two and compared both implementations. This allowed us to have two different approaches where we could discuss difficulties and pair programming enabled efficient implementing of the algorithm. After the implementation of the frameshift aware alignment, we considered integrating the affine gap penalty. After some research we came up with a paper that seemed to solve this problem. However, they used a different approach doing the frameshift alignment than we did. Consequently, one group decided to implement the affine gap penalty by adding the affine gap penalty restrictions to our affine gap penalty implementation. The other group tried to implement as described in the paper. However, this approach seemed to be too challenging which is why we decided for the other implementation. Therefore working in pairs to resolve the tasks was a good idea.
 
 
+## Algorithm
+As already mentioned in the introduction the frame-shift aware algorithm is a dynamic porgramm. Hence, a matrix which scores is filled to compute the alignment and the score. In the picture below it is illustrated how to compute the score for a a cell. The black errors indicate the same cases as in a "basic" alignment, while the blue errors show which cell we need to consider for frameshifts. In this case we either insert one base or two bases into the DNA query sequence q.
+![frameshift-table](https://user-images.githubusercontent.com/94982104/150526888-85e380a5-543e-48be-998a-0cef56917dba.png)
+
+Recursion:  
+![frameshift-rec](https://user-images.githubusercontent.com/94982104/150528688-b96e248d-fc5d-405b-a293-e2b56e740526.png)
+where d is the gap penalty, and k the frameshift penalty. 
+
+Note that the algorithm only works if the frameshift penalty is larger than the gap penalty. Hence, the occurance of an insertion or deletion is more probable than the occurance of a frameshift.
+
+### Affine gap penalty
+For the affine gap penalty we need two additional matrices (top matrix and bottom matrix). <br>
+We initialized the three matrices as follows:
+
+_Iniitialization columns_
+basePenalty = $-3*gap_open - (i*gap_extend)$ <br>
+
+score_matrix[i][0] = basePenalty<br>
+top_matrix[i][0] = top_matrix[i][1] = top_matrix[i][2] = - infinity<br>
+score_matrix[i][1] = score_matrix[i][2] = basePenalty - k<br>
+
+_Initialization rows_
+basePenalty = $-3*gap_open - (j*gap_extend)$ <br>
+score_matrix[0][j] = basePenalty<br>
+score_matrix[0][j+1] = score_matrix[0][j+2] = basePenalty - k<br>
+bottom_matrix[0][j] = bottom_matrix[0][j+1] = bottom_matrix[0][j+2] = - infinity<br>
+
+Recursion:
+![affine-gap-recursion](https://user-images.githubusercontent.com/94982104/150538090-9711a9e7-48b2-4219-ad37-9d78b5ed75fa.png)
+
+
+_All figures except for the affine gap penalty recursion were taken out of the Sequence Bioinformatics script by Daniel Huson_
 
 ## Usage
 Usage as module:
