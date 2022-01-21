@@ -33,7 +33,7 @@ A frameshift aware Needleman-Wunsch-Global-Aligner for DNA- and amino acid-seque
                         help="Specify path to blosum matrix. Use only if -b is not a viable solution.",
                         required=False)
 
-    parser.add_argument('-o', "--out", action='store', dest='out',
+    parser.add_argument('-o', "--out", action='store', dest='out', default=False,
                         help="Specify path to output file.",
                         required=False)
 

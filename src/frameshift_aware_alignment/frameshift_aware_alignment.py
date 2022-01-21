@@ -184,13 +184,32 @@ def align(dnaSeq: str, aaSeq: str, gap: int, shift: int,
 
     score, dnaSeq_align, aaSeq_align = __alignment_core(dnaSeq, aaSeq, gap, shift, bm)
 
-    if verbose:
-        print(f"Score: {score}")
-        print(dnaSeq_align)
-        print(aaSeq_align)
+    # Bridge between dna and aa alignment
+    matchChar = ["*", "\\", "/" "-"]
+    bridge = ""
+    for i, j in zip(dnaSeq_align, aaSeq_align):
+        if i in matchChar or j in matchChar:
+            bridge += " "
+        else:
+            bridge += "|"
 
-    # TODO IO
-    # PRINT Output
-    # WRITE Output
+    resultString = f"""# Frameshift aware Needleman-Wunsch
+# DNA-Sequence:\t{dnaSeq}
+# AA-Sequence: \t{aaSeq}
+# Gap-score: \t{gap}
+# Shift-score:\t{shift}
+#----------------------------
+# Score: {score}
+DNA: {dnaSeq_align}
+     {bridge}
+AA : {aaSeq_align}
+"""
+
+    if verbose:
+        print(resultString)
+
+    if out:
+        with open(out, "w") as f:
+            f.write(resultString)
 
     return score, dnaSeq_align, aaSeq_align
