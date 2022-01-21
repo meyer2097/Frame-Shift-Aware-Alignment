@@ -21,15 +21,18 @@ A frameshift aware alignment deals with this frameshifts and reports forward fra
 In this group project we constructed a dynamic programm which reports an alignment and the corresponding score considering frameshifts.
 
 ### Affine gap penalty
-In an alignment the gap penalty is an important parameter to score alignments. In our frame-shift aware alignment program we first considered the linear gap penalty, which penalizes each gap equally. However, this is not realistic when it comes to biological events. Each mutation (insertion or deletion) is an indivitiual evolutionary event. Consequently we consider an affine gap model which penalizes a gap opening higher than a gap extend. This gap model is called affine gap penalty. 
+In an alignment the gap penalty is an important parameter to score alignments. In our frameshift aware alignment program we first considered the linear gap penalty, which penalizes each gap equally. However, this is not realistic when it comes to biological events. Each mutation (insertion or deletion) is an indivitiual evolutionary event. Consequently we consider an affine gap model which penalizes a gap opening higher than a gap extend. This gap model is called affine gap penalty. 
 
-Linear gap penalty: AAGTGTGCGTTCCGATT
-                    AA--GT--G---CGATT
+![affine-gap-penalty-vs-linear](https://user-images.githubusercontent.com/94982104/150522224-2640f306-3508-4014-b41b-c03c2539e0da.png)
                     
-Affine gap penalty: AAGTGTGCGTTCCGATT
-                    AAGTG-------CGATT
-                    
-In addition to the plain frame-shift aware alignment, we also implemented a frame-shift alignment which also considers the affine gap penalty model.
+In addition to the plain frameshift aware alignment, we also implemented a frameshift alignment which also considers the affine gap penalty model.
+
+
+_The figures were taken out of the Sequence Bioinformatics script by Daniel Huson_
+
+## Teamwork
+In the beginning of the group project we first implemented the different helper functions: translating the DNA sequence to an amino acid sequence, reading in the fasta files and reading in the blosum matrix. We tested these functions and added different blossum matrices. Additionally we added the main function and discussed the input paramteters and the output format. Next we started with the actual frameshift aware alginment. Therefore we decided to implement two algorithms in pairs of two and compared both implementations. This allowed us to have two different approaches where we could discuss difficulties and pair programming enabled efficient implementing of the algorithm. After the implementation of the frameshift aware alignment, we considered integrating the affine gap penalty. After some research we came up with a paper that seemed to solve this problem. However, they used a different approach doing the frameshift alignment than we did. Consequently, one group decided to implement the affine gap penalty by adding the affine gap penalty restrictions to our affine gap penalty implementation. The other group tried to implement as described in the paper. However, this approach seemed to be too challenging which is why we decided for the other implementation. Therefore working in pairs to resolve the tasks was a good idea.
+
 
 
 ## Usage
