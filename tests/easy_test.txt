@@ -1,0 +1,11 @@
+687...777 https://www.ncbi.nlm.nih.gov/genbank/samplerecord/
+
+//ref DNA
+atga cacagcttca gatttcatta ttgctgacag				
+ctactatatc actactccat ctagtagtgg ccacgcccta tgaggcatat cctatc
+
+//without blanks, modified
+atgtctacacagcttcagattttattgctgacagctactatatcactactccatcttagtagtggccacgccctagaggcatatcctatc
+
+// AA
+MTQLQISLLLTATISLLHLVVATPYEAYPI
