@@ -65,6 +65,15 @@ Recursion:
 
 _All figures except for the affine gap penalty recursion were taken out of the Sequence Bioinformatics script by Daniel Huson_
 
+## Runtime
+![Runtime](https://user-images.githubusercontent.com/25013642/150572224-4b660955-0101-45ac-8c61-cede61ae3280.png)
+This algorithm has a theretical runtime `O(n*m)` with n=length of dna and m=length of the amino-acid sequence.
+
+To determine the actual runtime, random DNA and AA sequences were genereated and aligned. To get better results this step was performed 20 each, the median of them was used.
+The results can be viewed in the previous heatmap. 
+To predict the runtime, following formula can be used:
+`time_in_ms = 0.70030  + 0.00778* (n*m)`
+
 ## Usage
 Usage as module:
 
