@@ -72,7 +72,8 @@ This algorithm has a theretical runtime `O(n*m)` with n=length of dna and m=leng
 To determine the actual runtime, random DNA and AA sequences were genereated and aligned. To get better results this step was performed 20 each, the median of them was used.
 The results can be viewed in the previous heatmap. 
 To predict the runtime, following formula can be used:
-`time_in_ms = 0.70030  + 0.00778* (n*m)`
+
+`time_in_ms = 0.70030  + 0.00778* (AA*DNA)`
 
 ## Usage
 Usage as module:
