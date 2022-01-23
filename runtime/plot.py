@@ -10,7 +10,7 @@ df = medianDF
 df = df.applymap(lambda x: x*1000)
 df = df[::-1]
 
-ax = sns.heatmap(df,cbar_kws={'label': 'Time in ms'})
+ax = sns.heatmap(df, cbar_kws={'label': 'Time in ms'})
 ax.set(title="Median time to align two random sequences\nSingle Intel i5-8250U @ 3.400GHz core")
 ax.set(ylabel="Number ob Nucleotides")
 ax.set(xlabel="Number of Aminoacids")
