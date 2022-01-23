@@ -113,7 +113,7 @@ Several arguments should be provided:
         aaSeq_align: String, alignment of the AA sequence.
             With - denoting a gap.
 ```
-***Example**
+**Example**
 ```python
 from frameshift_aware_alignment import align
 
