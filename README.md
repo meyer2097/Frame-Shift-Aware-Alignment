@@ -115,7 +115,7 @@ Several arguments should be provided:
 ```
 ***Example**
 ```python
-from frameshift-aware-alignment import align
+from frameshift_aware_alignment import align
 
 score, dna, aa = align("AGTCAGT", "MM", 6, 15, 62, false)
 ```
