@@ -34,6 +34,7 @@ In the beginning of the group project we first implemented the different helper 
 
 ## Algorithm
 As already mentioned in the introduction the frame-shift aware algorithm is a dynamic porgramm. Hence, a matrix which scores is filled to compute the alignment and the score. In the picture below it is illustrated how to compute the score for a a cell. The black errors indicate the same cases as in a "basic" alignment, while the blue errors show which cell we need to consider for frameshifts. In this case we either insert one base or two bases into the DNA query sequence q.
+
 <img src="https://user-images.githubusercontent.com/94982104/150526888-85e380a5-543e-48be-998a-0cef56917dba.png" style="width:700px; max-width:90%" alt="table img">
 
 <img src="https://user-images.githubusercontent.com/94982104/150528688-b96e248d-fc5d-405b-a293-e2b56e740526.png" style="width:600px; max-width:90%" alt="rescursion img">
