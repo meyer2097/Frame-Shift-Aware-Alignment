@@ -94,7 +94,7 @@ pip install .
 ```
 
 ### Usage
-To align two sequences, the function `align` can be called.
+To align two sequences, the function `align` can be called. Some sequences for testing can be found within the `tests` folder.
 Several arguments should be provided:
 ```python
     Parameters:
