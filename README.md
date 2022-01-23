@@ -45,7 +45,7 @@ Note that the algorithm only works if the frameshift penalty is larger than the 
 ### Affine gap penalty
 Several papers have shown that an implementation of a frameshift-aware aligner with affine gap penalty is possible. All of them differ a lot in their objective and methodology. For this project, attempts were made to implement this on or own. However, it quickly became apparent that this was a very large field to cover, so we reduced it to the assumptions we could make for sure. 
 
-The following section shows the **incomplete** attempt. The code can be found in the branch 'affine_test_jules'.
+The following section shows the *incomplete* attempt. The code can be found in the branch 'affine_test_jules'.
 
 For the affine gap penalty we need two additional matrices:
 The top matrix should provide a minimal score if the extension of an amino-acid insertion is optimal, whereas the bottom matrix is responsible for the dna insertions.
@@ -76,6 +76,7 @@ _All figures except for the affine gap penalty recursion were taken out of the S
 
 ## Runtime
 ![Runtime](https://user-images.githubusercontent.com/25013642/150572224-4b660955-0101-45ac-8c61-cede61ae3280.png)
+
 The frameshift-aware global aligner has a theretical runtime `O(AA*DNA)` with AA=length of the amino-acid sequence and DNA=length of the dna sequence.
 
 To determine the actual runtime, random DNA and AA sequences with different length were generated and aligned. In order to obtain more accurate results, each length-combination was repeated 20 times, the median was taken.
