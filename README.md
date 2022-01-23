@@ -1,4 +1,4 @@
-# Frame-Shift-Aware-Alignment
+# Frameshift-Aware-Alignment
 Sequence Bioinformatics Group Project WS 21/22
 Samira Breitling, Jules Kreuer, Sebastian Meyer and Catalina Schlotterer
 
@@ -14,14 +14,14 @@ Then translate this read to its aminoacid sequence and compare it with the actua
 ![inserting bases to DNA strand lead to frameshift](https://user-images.githubusercontent.com/94982104/150515030-3abdf8ed-db21-4f92-ab7a-332c8111fabc.png)
 
 The green part of the alignment shows perfect matching parts of the alignment. However between the first and the third insertion, where the alignment is again in the original frame, the alignment is of poor quality.
-A frameshift aware alignment deals with this frameshifts and reports forward frameshifts (inserting two bases) and backward frameshifts (inserting one base) in the alignment, which leads to an alignment of significantly higher alignment quality.
+A frameshift-aware alignment deals with this frameshifts and reports forward frameshifts (inserting two bases) and backward frameshifts (inserting one base) in the alignment, which leads to an alignment of significantly higher alignment quality.
 
 ![inserting bases to DNA strand lead to frameshift](https://user-images.githubusercontent.com/94982104/150515892-70ba849d-47aa-4007-9f55-c0ec0efbbb3d.png)
 
 In this group project we constructed a dynamic programm which reports an alignment and the corresponding score considering frameshifts.
 
 ### Affine gap penalty
-In an alignment the gap penalty is an important parameter to score alignments. In our frameshift aware alignment program we first considered the linear gap penalty, which penalizes each gap equally. However, this is not realistic when it comes to biological events. Each mutation (insertion or deletion) is an indivitiual evolutionary event. As a consequence, we consider an affine gap model, which penalizes a gap opening higher than a gap extending. This gap model is called affine gap penalty. 
+In an alignment the gap penalty is an important parameter to score alignments. In our frameshift-aware alignment program we first considered the linear gap penalty, which penalizes each gap equally. However, this is not realistic when it comes to biological events. Each mutation (insertion or deletion) is an indivitiual evolutionary event. As a consequence, we consider an affine gap model, which penalizes a gap opening higher than a gap extending. This gap model is called affine gap penalty. 
 
 ![affine-gap-penalty-vs-linear](https://user-images.githubusercontent.com/94982104/150522224-2640f306-3508-4014-b41b-c03c2539e0da.png)
                     
@@ -29,11 +29,11 @@ In addition to the plain frameshift aware alignment, we also implemented a frame
 
 
 ## Teamwork
-In the beginning of the group project we first implemented the different helper functions: translating the DNA sequence to an amino acid sequence, reading in the fasta files and reading in the blosum matrix. We tested these functions and added different blossum matrices. Additionally we added the main function and discussed the input paramteters and the output format. Next we started with the actual frameshift aware alginment. Therefore we decided to implement two algorithms in pairs of two and compared both implementations. This allowed us to have two different approaches, where we could discuss difficulties and pair programming enabled efficient implementing of the algorithm. After the implementation of the frameshift aware alignment, we considered integrating the affine gap penalty. After some research we came up with a paper, that seemed to solve this problem. However, they used a different approach doing the frameshift alignment than we did. Consequently, one group decided to implement the affine gap penalty by adding the affine gap penalty restrictions to our linear gap penalty implementation. The other group tried to implement as described in the paper. Sadly, the preconditions and main ideas of the paper were too different compared to ours, so we decided to go with our own recursion . Therefore working in pairs to resolve the tasks was a good idea.
+In the beginning of the group project we first implemented the different helper functions: translating the DNA sequence to an amino acid sequence, reading in the fasta files and reading in the blosum matrix. We tested these functions and added different blossum matrices. Additionally we added the main function and discussed the input paramteters and the output format. Next we started with the actual frameshift aware alginment. Therefore we decided to implement two algorithms in pairs of two and compared both implementations. This allowed us to have two different approaches, where we could discuss difficulties and pair programming enabled efficient implementing of the algorithm. After the implementation of the frameshift aware alignment, we considered integrating the affine gap penalty. After some research we came up with a paper, that seemed to solve this problem ("Frameshift alignment: statistics and post-genomic applications" by Sergey L. Sheetlin, Yonil Park, Martin C. Frith, and John L. Spouge). However, they used a different approach doing the frameshift alignment than we did. Consequently, one group decided to implement the affine gap penalty by adding the affine gap penalty restrictions to our linear gap penalty implementation. The other group tried to implement as described in the paper. Sadly, the preconditions and main ideas of the paper were too different compared to ours, so we decided to go with our own recursion . Therefore working in pairs to resolve the tasks was a good idea.
 
 
 ## Algorithm
-As already mentioned in the introduction the frame-shift aware algorithm is a dynamic porgramm. Hence, a matrix which scores is filled to compute the alignment and the score. In the picture below it is illustrated how to compute the score for a a cell. The black errors indicate the same cases as in a "basic" alignment, while the blue errors show which cell we need to consider for frameshifts. In this case we either insert one base or two bases into the DNA query sequence q.
+As already mentioned in the introduction, the frameshift-aware algorithm is a dynamic porgramm. Hence, a matrix which scores is filled to compute the alignment and the score. In the picture below it is illustrated how to compute the score for a a cell. The black errors indicate the same cases as in a "basic" alignment, while the blue errors show which cell we need to consider for frameshifts. In this case we either insert one base or two bases into the DNA query sequence q.
 
 <img src="https://user-images.githubusercontent.com/94982104/150526888-85e380a5-543e-48be-998a-0cef56917dba.png" style="width:700px; max-width:90%" alt="table img">
 
@@ -43,7 +43,7 @@ where d is the gap penalty, and k the frameshift penalty.
 Note that the algorithm only works if the frameshift penalty is larger than the gap penalty. Hence, the occurance of an insertion or deletion is more probable than the occurance of a frameshift.
 
 ### Affine gap penalty
-Several papers have shown that an implementation of a frameshift awaren aligner with affine gap penalty is possible. For this project, attempts were made to implement this. However, it quickly became apparent that this was too big an undertaking. 
+Several papers have shown that an implementation of a frameshift-aware aligner with affine gap penalty is possible. All of them differ a lot in their objective and methodology. For this project, attempts were made to implement this on or own. However, it quickly became apparent that this was a very large field to cover, so we reduced it to the assumptions we could make for sure. 
 
 The following section shows the **incomplete** attempt. The code can be found in the branch 'affine_test_jules'.
 
@@ -72,21 +72,21 @@ Recursion:
 <img src="https://user-images.githubusercontent.com/94982104/150538090-9711a9e7-48b2-4219-ad37-9d78b5ed75fa.png" alt="rescursion 2 img">
 
 
-_All figures except for the affine gap penalty recursion were taken out of the Sequence Bioinformatics script by Daniel Huson_
+_All figures except for the affine gap penalty recursion were taken out of the Sequence Bioinformatics lecture 2021/2022 script by Daniel Huson_
 
 ## Runtime
 ![Runtime](https://user-images.githubusercontent.com/25013642/150572224-4b660955-0101-45ac-8c61-cede61ae3280.png)
-The frameshift-aware global alginer has a theretical runtime `O(AA*DNA)` with AA=length of the amino-acid sequence and DNA=length of dna sequence.
+The frameshift-aware global aligner has a theretical runtime `O(AA*DNA)` with AA=length of the amino-acid sequence and DNA=length of the dna sequence.
 
-To determine the actual runtime, random DNA and AA sequences with different length were generated and aligned. In order to obtain more accurate results, each length combination was repeated 20 times, the median was taken.
+To determine the actual runtime, random DNA and AA sequences with different length were generated and aligned. In order to obtain more accurate results, each length-combination was repeated 20 times, the median was taken.
 The results can be viewed in the previous heatmap.
 
-To predict the running time, the following formula, determined by a simple linear model, can be used:
+To predict the running time, the following formula determined by a simple linear model, can be used:
 
 `time_in_ms = 0.70030  + 0.00778 * AA * DNA`
 
 ## Installation
-This project was build a python module and can be installed with pip:
+This project was build as a python module and can be installed with pip:
 
 ```
 # Clone repo
@@ -122,7 +122,7 @@ score, dna, aa = align("AGTCAGT", "MM", 6, 15, 62, false)
 ```
 
 ## Standalone version
-A usage without installation is also possible. After downloading the arcive, execute top-level file `align.py`.
+A usage without installation is also possible. After downloading the archive, execute top-level file `align.py`.
 
 ```
 python3 align.py [-h] -d DNASEQ -aa AASEQ -gp GAP-Penalty -sp SHIFT-Penalty [-b BLOSUM] [-bp BLOSUM_PATH] [-o OUT]
