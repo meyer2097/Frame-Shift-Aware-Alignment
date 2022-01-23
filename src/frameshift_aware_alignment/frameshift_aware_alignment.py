@@ -168,11 +168,13 @@ def align(dnaSeq: str, aaSeq: str, gap: int, shift: int,
     """
 
     if isfile(dnaSeq):
-        dnaSeq = read_fasta(dnaSeq)[0]
+        dnaSeq = read_fasta(dnaSeq)[0].body
+    dnaSeq = dnaSeq.upper()
 
     if isfile(aaSeq):
-        aaSeq = read_fasta(aaSeq)[0]
+        aaSeq = read_fasta(aaSeq)[0].body
 
+    aaSeq = aaSeq.upper()
     bm = BLOSUM(blosum)
 
     if shift <= 0:
@@ -185,10 +187,10 @@ def align(dnaSeq: str, aaSeq: str, gap: int, shift: int,
     score, dnaSeq_align, aaSeq_align = __alignment_core(dnaSeq, aaSeq, gap, shift, bm)
 
     # Bridge between dna and aa alignment
-    matchChar = ["*", "\\", "/" "-"]
+    nonMatchChar = "*\\/-"
     bridge = ""
     for i, j in zip(dnaSeq_align, aaSeq_align):
-        if i in matchChar or j in matchChar:
+        if i in nonMatchChar or j in nonMatchChar:
             bridge += " "
         else:
             bridge += "|"
@@ -198,11 +200,17 @@ def align(dnaSeq: str, aaSeq: str, gap: int, shift: int,
 # AA-Sequence: \t{aaSeq}
 # Gap-score: \t{gap}
 # Shift-score:\t{shift}
+# Blosum:\t{blosum}
 #----------------------------
 # Score: {score}
-DNA: {dnaSeq_align}
-     {bridge}
-AA : {aaSeq_align}
+
+"""
+
+    for i in range(0, len(dnaSeq_align), 70):
+        resultString += f"""DNA: {dnaSeq_align[i:i+70]}
+     {bridge[i:i+70]}
+AA : {aaSeq_align[i:i+70]}
+
 """
 
     if verbose:
