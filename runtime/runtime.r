@@ -1,4 +1,5 @@
 library(reshape2)
+
 d = read.csv("median.csv", header = TRUE)
 meltedData = melt(d, id.vars = "X")
 names(meltedData) = c("DNA", "AA", "Time")
@@ -8,6 +9,5 @@ meltedData$Time = meltedData$Time*1000
 meltedData$AA = as.numeric(meltedData$AA)
 meltedData$DNA = as.numeric(meltedData$DNA)
 
-meltedData$DNAtimesAA = meltedData$DNA * meltedData$AA
-
-l = lm(Time ~ DNAtimesAA, data = meltedData)
+l = lm(Time ~ AA:DNA, data = meltedData)
+l
