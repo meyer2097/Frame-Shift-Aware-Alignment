@@ -34,49 +34,58 @@ In the beginning of the group project we first implemented the different helper 
 
 ## Algorithm
 As already mentioned in the introduction the frame-shift aware algorithm is a dynamic porgramm. Hence, a matrix which scores is filled to compute the alignment and the score. In the picture below it is illustrated how to compute the score for a a cell. The black errors indicate the same cases as in a "basic" alignment, while the blue errors show which cell we need to consider for frameshifts. In this case we either insert one base or two bases into the DNA query sequence q.
-![frameshift-table](https://user-images.githubusercontent.com/94982104/150526888-85e380a5-543e-48be-998a-0cef56917dba.png)
+<img src="https://user-images.githubusercontent.com/94982104/150526888-85e380a5-543e-48be-998a-0cef56917dba.png" style="width:700px; max-width:90%" alt="table img">
 
-Recursion:  
-![frameshift-rec](https://user-images.githubusercontent.com/94982104/150528688-b96e248d-fc5d-405b-a293-e2b56e740526.png)
+<img src="https://user-images.githubusercontent.com/94982104/150528688-b96e248d-fc5d-405b-a293-e2b56e740526.png" style="width:600px; max-width:90%" alt="rescursion img">
 where d is the gap penalty, and k the frameshift penalty. 
 
 Note that the algorithm only works if the frameshift penalty is larger than the gap penalty. Hence, the occurance of an insertion or deletion is more probable than the occurance of a frameshift.
 
 ### Affine gap penalty
-For the affine gap penalty we need two additional matrices (top matrix and bottom matrix). <br>
+Several papers have shown that an implementation of a frameshift awaren aligner with affine gap penalty is possible. For this project, attempts were made to implement this. However, it quickly became apparent that this was too big an undertaking. 
+
+The following section shows the **incomplete** attempt. The code can be found in the branch 'affine_test_jules'.
+
+For the affine gap penalty we need two additional matrices:
+The top matrix should provide a minimal score if the extension of an amino-acid insertion is optimal, whereas the bottom matrix is responsible for the dna insertions.
+
 We initialized the three matrices as follows:
 
 _Iniitialization columns_
-basePenalty = $-3*gap_open - (i*gap_extend)$ <br>
+```python
+basePenalty = -3*gap_open - (i*gap_extend)
 
-score_matrix[i][0] = basePenalty<br>
-top_matrix[i][0] = top_matrix[i][1] = top_matrix[i][2] = - infinity<br>
-score_matrix[i][1] = score_matrix[i][2] = basePenalty - k<br>
-
+score_matrix[i][0] = basePenalty
+top_matrix[i][0] = top_matrix[i][1] = top_matrix[i][2] = - infinity
+score_matrix[i][1] = score_matrix[i][2] = basePenalty - k
+```
 _Initialization rows_
-basePenalty = $-3*gap_open - (j*gap_extend)$ <br>
-score_matrix[0][j] = basePenalty<br>
-score_matrix[0][j+1] = score_matrix[0][j+2] = basePenalty - k<br>
-bottom_matrix[0][j] = bottom_matrix[0][j+1] = bottom_matrix[0][j+2] = - infinity<br>
+```python
+basePenalty = -3*gap_open - (j*gap_extend)
 
+score_matrix[0][j] = basePenalty
+score_matrix[0][j+1] = score_matrix[0][j+2] = basePenalty - k
+bottom_matrix[0][j] = bottom_matrix[0][j+1] = bottom_matrix[0][j+2] = - infinity
+```
 Recursion:
-![affine-gap-recursion](https://user-images.githubusercontent.com/94982104/150538090-9711a9e7-48b2-4219-ad37-9d78b5ed75fa.png)
+<img src="https://user-images.githubusercontent.com/94982104/150538090-9711a9e7-48b2-4219-ad37-9d78b5ed75fa.png" alt="rescursion 2 img">
 
 
 _All figures except for the affine gap penalty recursion were taken out of the Sequence Bioinformatics script by Daniel Huson_
 
 ## Runtime
 ![Runtime](https://user-images.githubusercontent.com/25013642/150572224-4b660955-0101-45ac-8c61-cede61ae3280.png)
-This algorithm has a theretical runtime `O(n*m)` with n=length of dna and m=length of the amino-acid sequence.
+The frameshift-aware global alginer has a theretical runtime `O(AA*DNA)` with AA=length of the amino-acid sequence and DNA=length of dna sequence.
 
-To determine the actual runtime, random DNA and AA sequences were genereated and aligned. To get better results this step was performed 20 each, the median of them was used.
-The results can be viewed in the previous heatmap. 
-To predict the runtime, following formula can be used:
+To determine the actual runtime, random DNA and AA sequences with different length were genereated and aligned. In order to obtain more accurate results, each length combination was repeated 20 times, the median was taken.
+The results can be viewed in the previous heatmap.
 
-`time_in_ms = 0.70030  + 0.00778* (AA*DNA)`
+To predict the running time, the following formula, determined by a simple linear model, can be used:
 
-## Usage
-Usage as module:
+`time_in_ms = 0.70030  + 0.00778 * AA * DNA`
+
+## Installation
+This project was build a python module and can be installed with pip:
 
 ```
 # Clone repo
@@ -84,15 +93,38 @@ cd Frame-Shift-Aware-Alignment
 pip install .
 ```
 
+### Usage
+To align two sequences, the function `align` can be called.
+Several arguments should be provided:
+```python
+    Parameters:
+        dnaSeq:  string, dna sequence.
+        aaSeq:   string, amino-acid sequence.
+        gap:     int, score for gap.
+        shift:   int, score for frameshift.
+        bm:      int, string, One of [45, 50, 62, 80, 90] or path to blosum matrix.
+        verbose: bool, print score and alignment.
+    Returns:
+        score: Int, Score of aligment
+        dnaSeq_align: String, alignment of the DNA sequence.
+            With \\ denoting a backward-framshift.
+            With / denoting a forward-framshift.
+            With - denoting a gap.
+        aaSeq_align: String, alignment of the AA sequence.
+            With - denoting a gap.
+```
+***Example**
 ```python
 from frameshift-aware-alignment import align
 
-score, dna, aa = align(...)
+score, dna, aa = align("AGTCAGT", "MM", 6, 15, 62, false)
 ```
 
-Usage as standalone script
+## Standalone version
+A usage without installation is also possible. After downloading the arcive, execute top-level file `align.py`.
+
 ```
-python3 align.py [-h] -d DNASEQ -aa AASEQ -gp GAP -sp SHIFT [-b BLOSUM] [-bp BLOSUM_PATH] [-o OUT]
+python3 align.py [-h] -d DNASEQ -aa AASEQ -gp GAP-Penalty -sp SHIFT-Penalty [-b BLOSUM] [-bp BLOSUM_PATH] [-o OUT]
 ```
 
 
