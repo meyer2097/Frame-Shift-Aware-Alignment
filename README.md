@@ -77,7 +77,7 @@ _All figures except for the affine gap penalty recursion were taken out of the S
 ## Runtime
 ![Runtime](https://user-images.githubusercontent.com/25013642/150572224-4b660955-0101-45ac-8c61-cede61ae3280.png)
 
-The frameshift-aware global aligner has a theretical runtime `O(AA*DNA)` with AA=length of the amino-acid sequence and DNA=length of the dna sequence.
+The frameshift-aware global aligner has a theoretical runtime `O(AA*DNA)` with AA=length of the amino-acid sequence and DNA=length of the dna sequence.
 
 To determine the actual runtime, random DNA and AA sequences with different length were generated and aligned. In order to obtain more accurate results, each length-combination was repeated 20 times, the median was taken.
 The results can be viewed in the previous heatmap.
